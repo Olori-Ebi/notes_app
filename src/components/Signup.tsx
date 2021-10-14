@@ -1,15 +1,26 @@
 import React, { SyntheticEvent, useState } from "react";
 import axios from 'axios'
-import { makeStyles } from '@mui/styles'
 import { Button, TextField, Box } from "@mui/material";
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Link } from 'react-router-dom'
+//import useStyles from './theme'
+import { makeStyles } from '@mui/styles'
 import "@fontsource/poppins"
 import dotenv from 'dotenv'
 dotenv.config();
 
-const useStyles = makeStyles({
+
+const SignUpForm = () => {
+    const [firstname, setfirstname] = useState("");
+    const [lastname, setlastname] = useState("");
+    const [email, setemail] = useState("");
+    const [password, setpassword] = useState("");
+    const [repeatPassword, setrepeatPassword] = useState("");
+    const [showWarning, setShowWarning] = useState(false);
+    const [warningMessage, setWarningMsg] = useState("")
+
+    const useStyles = makeStyles({
     bodys: {
         backgroundColor: "whitesmoke",
         width: "100%",
@@ -72,14 +83,6 @@ const useStyles = makeStyles({
     }
 });
 
-const SignUpForm = () => {
-    const [firstname, setfirstname] = useState("");
-    const [lastname, setlastname] = useState("");
-    const [email, setemail] = useState("");
-    const [password, setpassword] = useState("");
-    const [repeatPassword, setrepeatPassword] = useState("");
-    const [showWarning, setShowWarning] = useState(false);
-    const [warningMessage, setWarningMsg] = useState("")
 
     function validatePassword() {
         if (password.length > 1 && repeatPassword !== password) {
@@ -88,6 +91,7 @@ const SignUpForm = () => {
             return true
         }
     }
+
     async function signUpUser(event: SyntheticEvent) {
         event.preventDefault();
         //check that the password and repeat password is a match
@@ -105,7 +109,8 @@ const SignUpForm = () => {
                 password,
                 confirm_password: repeatPassword,
             };
-            await axios.post(process.env.REACT_APP_signup_url as string, details)
+            
+              await axios.post(process.env.REACT_APP_signup_url as string, details)
                 .then((response) => {
                     alert("success!")
                     console.log(response)
@@ -114,7 +119,7 @@ const SignUpForm = () => {
                     setWarningMsg(err.response.data);
                     setShowWarning(true)
                     // alert(`Error occurred: ${err.response.data}`)
-                })
+            })
         }
     }
 
@@ -127,23 +132,66 @@ const SignUpForm = () => {
             <div className={classes.bodys}>
                 <Box className={classes.boxWrapper}>
                     <form className={classes.boxs} onSubmit={signUpUser}>
-                        <TextField label='First Name' placeholder='First Name' className={classes.email} sx={{ mb: '20px' }} size="small" onChange={(e) => setfirstname(e.target.value)} required />
-                        <TextField label='Last Name' placeholder='Last Name' className={classes.email} sx={{ mb: '20px' }} size="small" onChange={(e) => setlastname(e.target.value)} required />
-                        <TextField label='Email Address' placeholder='Email Address' type='email' sx={{ mb: '20px' }} size="small" className={classes.email} onChange={(e) => setemail(e.target.value)} required />
-                        <TextField label='Password' placeholder='Enter password' type='password' sx={{ mb: '20px' }} size="small" className={classes.email} onChange={(e) => setpassword(e.target.value)} required />
-                        <TextField label='Repeat Password' placeholder='Repeat Password' type='password' sx={{ mb: '20px' }} size="small" className={classes.email} onChange={(e) => setrepeatPassword(e.target.value)} required />
+
+                        <TextField 
+                        label='First Name' 
+                        placeholder='First Name' 
+                        className={classes.email} 
+                        sx={{ mb: '20px' }} 
+                        size="small" 
+                        onChange={(e) => setfirstname(e.target.value)} required />
+
+                        <TextField 
+                        label='Last Name' 
+                        placeholder='Last Name' 
+                        className={classes.email} 
+                        sx={{ mb: '20px' }} 
+                        size="small" 
+                        onChange={(e) => setlastname(e.target.value)} required />
+
+                        <TextField 
+                        label='Email Address' 
+                        placeholder='Email Address' 
+                        type='email' sx={{ mb: '20px' }} 
+                        size="small" className={classes.email} 
+                        onChange={(e) => setemail(e.target.value)} required />
+
+                        <TextField 
+                        label='Password' 
+                        placeholder='Enter password' 
+                        type='password' sx={{ mb: '20px' }} 
+                        size="small" className={classes.email} 
+                        onChange={(e) => setpassword(e.target.value)} required />
+
+                        <TextField 
+                        label='Repeat Password' 
+                        placeholder='Repeat Password' 
+                        type='password' 
+                        sx={{ mb: '20px' }} 
+                        size="small" 
+                        className={classes.email} 
+                        onChange={(e) => setrepeatPassword(e.target.value)} required />
 
                         {showWarning && <p style={{ margin: "5px 0 5px 0", color: "red" }}> {warningMessage} </p>}
                         <div className={classes.formStyle}>
-                            <Button type="submit" className={classes.btn} sx={{ color: "white", mb: "30px" }} style={{ backgroundColor: '#32A05F' }}>
+                            <Button 
+                            type="submit" 
+                            className={classes.btn} 
+                            sx={{ color: "white", mb: "30px" }} 
+                            style={{ backgroundColor: '#32A05F' }}>
                                 SIGN UP
                             </Button>
+
                             <span style={{ textAlign: 'center', marginRight: '40px', marginBottom: '20px' }}>or</span>
                             <div className={classes.formText}> Sign up with Social Networks</div>
                         </div>
+
                         <div className={classes.formIcons}>
-                            <FacebookRoundedIcon className={classes.fb} sx={{ width: '30px', height: '30px' }} />
-                            <GoogleIcon sx={{ width: '30px', height: '30px' }} />
+                            <FacebookRoundedIcon 
+                            className={classes.fb} 
+                            sx={{ width: '30px', height: '30px' }} />
+                            <GoogleIcon 
+                            sx={{ width: '30px', height: '30px' }} />
                         </div>
                         <div className={classes.formText}>
                             <p>Already have an account?
