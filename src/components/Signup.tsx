@@ -4,7 +4,7 @@ import { Button, TextField, Box } from "@mui/material";
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Link } from 'react-router-dom'
-//import useStyles from './theme'
+import SignInForm from './SignIn'
 import { makeStyles } from '@mui/styles'
 import "@fontsource/poppins"
 import dotenv from 'dotenv'
@@ -187,11 +187,16 @@ const SignUpForm = () => {
                         </div>
 
                         <div className={classes.formIcons}>
+                        <a href="https://notesxd.herokuapp.com/auth/facebook">
                             <FacebookRoundedIcon 
                             className={classes.fb} 
                             sx={{ width: '30px', height: '30px' }} />
+                            </a>
+                            
+                            <a href="https://notesxd.herokuapp.com/auth/google/">
                             <GoogleIcon 
                             sx={{ width: '30px', height: '30px' }} />
+                            </a>
                         </div>
                         <div className={classes.formText}>
                             <p>Already have an account?

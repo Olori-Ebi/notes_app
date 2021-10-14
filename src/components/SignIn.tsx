@@ -140,8 +140,16 @@ const SignInForm = () => {
                             </div>
 
                             <div className={classes.formIcons}>
-                                <FacebookRoundedIcon className={classes.fb} sx={{ width: '30px', height: '30px' }} />
-                                <GoogleIcon sx={{ width: '30px', height: '30px' }} />
+                            <a href="https://notesxd.herokuapp.com/auth/facebook">
+                                <FacebookRoundedIcon 
+                                className={classes.fb} 
+                                sx={{ width: '30px', height: '30px' }} />
+                            </a> 
+                            <a href="https://notesxd.herokuapp.com/auth/google/">
+                                <GoogleIcon 
+                                sx={{ width: '30px', height: '30px' }} />
+                            </a>
+                            
                             </div>
 
                             <div className={classes.formText}>
@@ -161,4 +169,4 @@ const SignInForm = () => {
     );
 };
 
-    export default SignInForm;
+export default SignInForm;
