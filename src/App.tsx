@@ -1,5 +1,7 @@
 import React from 'react';
+import { BrowserRouter as Router,Switch, Route,Link } from "react-router-dom";
 import './App.css';
+import Homepage from './components/Homepage';
 import SignUpForm from './components/Signup'
 import SignInForm from './components/SignIn';
 import EmailInput from './components/EmailInput';
@@ -12,11 +14,14 @@ function App() {
     <div className="App">
       <Router>
         <Switch>
+          <Route path='/'  exact>
+            <SignInForm />
+          </Route>
+          <Route path='/homepage'>
+            <Homepage />
+          </Route>
           <Route path='/Signup'>
             <SignUpForm />
-          </Route>
-          <Route path='/login'>
-            <SignInForm />
           </Route>
           <Route path='/email'>
             <EmailInput />
@@ -29,7 +34,6 @@ function App() {
     </div>
   );
 }
-
 
 export default App;
 
