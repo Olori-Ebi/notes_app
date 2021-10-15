@@ -3,7 +3,7 @@ import axios from 'axios'
 import { makeStyles } from '@mui/styles'
 import { Button, TextField, Box } from "@mui/material";
 import "@fontsource/poppins"
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 
 const useStyles = makeStyles({
@@ -52,6 +52,7 @@ const PasswordInput =() => {
     const [warningMessage, setWarningMsg] = useState("")
     const [alertMessage, setAlertMsg] = useState("")
     let params:{token:string} = useParams()
+    const history = useHistory()
     function validatePassword() {
         if( repeatPassword !== password ){
             return false;
@@ -74,6 +75,7 @@ const PasswordInput =() => {
       let apiRes = null
       try{
         apiRes = await axios.post("https://notesxd.herokuapp.com/users/reset", details)
+        history.push('/')
       } catch (err:any) {
         apiRes = err.response;
         setWarningMsg(err.response.data.message);
