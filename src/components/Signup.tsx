@@ -4,23 +4,12 @@ import { Button, TextField, Box } from "@mui/material";
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Link } from 'react-router-dom'
-import SignInForm from './SignIn'
 import { makeStyles } from '@mui/styles'
 import "@fontsource/poppins"
 import dotenv from 'dotenv'
 dotenv.config();
 
-
-const SignUpForm = () => {
-    const [firstname, setfirstname] = useState("");
-    const [lastname, setlastname] = useState("");
-    const [email, setemail] = useState("");
-    const [password, setpassword] = useState("");
-    const [repeatPassword, setrepeatPassword] = useState("");
-    const [showWarning, setShowWarning] = useState(false);
-    const [warningMessage, setWarningMsg] = useState("")
-
-    const useStyles = makeStyles({
+const useStyles = makeStyles({
     bodys: {
         backgroundColor: "whitesmoke",
         width: "100%",
@@ -83,6 +72,14 @@ const SignUpForm = () => {
     }
 });
 
+const SignUpForm = () => {
+    const [firstname, setfirstname] = useState("");
+    const [lastname, setlastname] = useState("");
+    const [email, setemail] = useState("");
+    const [password, setpassword] = useState("");
+    const [repeatPassword, setrepeatPassword] = useState("");
+    const [showWarning, setShowWarning] = useState(false);
+    const [warningMessage, setWarningMsg] = useState("")
 
     function validatePassword() {
         if (password.length > 1 && repeatPassword !== password) {
@@ -200,7 +197,7 @@ const SignUpForm = () => {
                         </div>
                         <div className={classes.formText}>
                             <p>Already have an account?
-                                <Link to='/login'>
+                                <Link to='/'>
                                     <span className={classes.signup}> Log In</span>
                                 </Link>
                             </p>

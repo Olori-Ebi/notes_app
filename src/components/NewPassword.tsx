@@ -48,7 +48,6 @@ const useStyles = makeStyles({
 const PasswordInput =() => {
     const [password, setpassword] = useState("");
     const [repeatPassword, setrepeatPassword] = useState("");
-    const [showWarning, setShowWarning] = useState(false);
     const [warningMessage, setWarningMsg] = useState("")
     const [alertMessage, setAlertMsg] = useState("")
     let params:{token:string} = useParams()
@@ -65,7 +64,6 @@ const PasswordInput =() => {
     const passwordMatch = validatePassword()
     if(!passwordMatch){
       setAlertMsg("Password do not match please check your password entry and try again!")
-      setShowWarning(true)
     }else{
       const details = { 
         password,
@@ -79,7 +77,6 @@ const PasswordInput =() => {
       } catch (err:any) {
         apiRes = err.response;
         setWarningMsg(err.response.data.message);
-        setShowWarning(true)
       } finally {
           console.log(apiRes);
       }
@@ -96,8 +93,8 @@ const PasswordInput =() => {
     <Box className={classes.boxWrapper} sx={{ width: 500, height:300}}>
       <h5 style={{paddingTop:"10px",display:"flex", justifyContent:"center", color:"red"}}>{alertMessage}</h5>
       <form className={classes.boxs} onSubmit={userPassword}>
-        <TextField label="New Password" helperText={`${warningMessage}`} sx={{ mb:3}} size="small" className={classes.email} onChange={ (e)=> setpassword(e.target.value)}/>
-        <TextField label="Re-Enter New Password" helperText={`${warningMessage}`} size="small" className={classes.email} onChange={ (e)=> setrepeatPassword(e.target.value)} />
+        <TextField label="New Password" helperText={`${warningMessage}`} type='password' sx={{ mb:3}} size="small" className={classes.email} onChange={ (e)=> setpassword(e.target.value)}/>
+        <TextField label="Re-Enter New Password" helperText={`${warningMessage}`} type='password' size="small" className={classes.email} onChange={ (e)=> setrepeatPassword(e.target.value)} />
         <Button type="submit" className={classes.btn} sx={{ color:"white", mt:3 }} style={{ backgroundColor: '#32A05F'}}>
           SUBMIT
         </Button> 

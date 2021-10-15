@@ -3,8 +3,6 @@ import { makeStyles } from '@mui/styles'
 import { Button, TextField, Box } from "@mui/material";
 import "@fontsource/poppins"
 import axios from 'axios'
-// import { Link } from "react-router-dom";
-
 
 const useStyles = makeStyles({
   bodys:{
@@ -48,7 +46,6 @@ const useStyles = makeStyles({
 
 const EmailInput = () => {
   const [email, setemail] = useState("");
-  const [showWarning, setShowWarning] = useState(false);
   const [warningMessage, setWarningMsg] = useState("")
   const [alertMessage, setAlertMsg] = useState("")
 
@@ -56,7 +53,6 @@ async function userEmail(event: SyntheticEvent){
   event.preventDefault();
   if(!email){
       setWarningMsg("Please input your Email")
-      setShowWarning(true);
       //submit user details 
     }else{
         const details = { 
@@ -69,7 +65,6 @@ async function userEmail(event: SyntheticEvent){
       } catch (err:any) {
         apiRes = err.response;
         setWarningMsg(err.response.data.message);
-        setShowWarning(true)
       } finally {
         console.log(apiRes);
       }
@@ -86,8 +81,7 @@ async function userEmail(event: SyntheticEvent){
       <Box className={classes.boxWrapper} sx={{ width: 500, height:300}}>
       <h4 style={{paddingTop:"20px", display:"flex", justifyContent:"center", color:"#65c368"}}>{alertMessage}</h4>
         <form className={classes.boxs} onSubmit={userEmail}>
-          <TextField label="Email" helperText={`${warningMessage}`} size="small" className={classes.email} onChange={ (e)=> setemail(e.target.value)}/>
-          {/* {showWarning && <p style={{margin:"5px 0 5px 0", color:"red"}}>{warningMessage}</p>} */}
+          <TextField label="Email" helperText={`${warningMessage}`} type='email' size="small" className={classes.email} onChange={ (e)=> setemail(e.target.value)}/>
           <Button type="submit" className={classes.btn} sx={{ color:"white", mt:3 }} style={{ backgroundColor: '#32A05F' }}>
             SUBMIT
           </Button>

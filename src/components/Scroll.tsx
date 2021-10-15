@@ -1,9 +1,11 @@
 import React from 'react'
 import { makeStyles } from '@mui/styles';
+import { borderLeft } from '@mui/system';
 
 const useStyles = makeStyles({
     scrollWrapper:{
-        flex:'50%'
+        flex:'50%',
+        borderLeft:"0.5px solid grey"
     }
 });
 
