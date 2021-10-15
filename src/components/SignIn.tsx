@@ -5,9 +5,8 @@ import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
 import GoogleIcon from '@mui/icons-material/Google';
 import axios from 'axios';
 import { Link, useHistory } from 'react-router-dom'
-import dotenv from 'dotenv'
+import {useCookies} from 'react-cookie'
 import "@fontsource/poppins"
-dotenv.config();
 
 const useStyles = makeStyles({
     bodys: {
@@ -75,8 +74,9 @@ const useStyles = makeStyles({
 const SignInForm = () => {
     const [email, setemail] = useState("");
     const [password, setpassword] = useState("");
-    const [showWarning, setShowWarning] = useState(false);
     const [warningMessage, setWarningMsg] = useState("")
+    const [cookies, setCookies] = useCookies(['token'])
+    const [Id, setId] = useCookies(['id'])
     const history = useHistory()
 
     function checkLoginDetails(){
@@ -92,7 +92,6 @@ const SignInForm = () => {
         const checker = checkLoginDetails()
         if (!checker){
            setWarningMsg("Email and Password is Required");
-           setShowWarning(true)
         }else{
             const details = {
                 email,
@@ -100,19 +99,39 @@ const SignInForm = () => {
             };
 
             let result = null
+            let result2 = null
             try{
-                result = await axios.post("https://notesxd.herokuapp.com/users/login", details)
+                
+                result = await axios({
+                    method : "POST",
+                    data : details,
+                    withCredentials : true,
+                    url : "https://notesxd.herokuapp.com/users/login",
+                })
+                
                 history.push('/homepage')
             } catch (err:any) {
                 console.log(err, "wertyuio")
                 result = err.response;
                 setWarningMsg("Not a valid Email or Password");
-                setShowWarning(true)
             }finally {
-                console.log(result);
+                console.log(result.data.token);
+                setCookies('token', result.data.token )
             }
+            result2 = await axios({
+                method : "GET",
+                // data : details,
+                withCredentials : true,
+                headers:{
+                    'x-access-token' : result.data.token
+                },
+                url : "https://notesxd.herokuapp.com/notes/tests",
+            }) 
+            setId('id', result2.data)
+            console.log(result2)         
         }
     }
+
     const classes = useStyles();
     return (
          <>
@@ -124,8 +143,8 @@ const SignInForm = () => {
                         <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"red"}}>{warningMessage}</h5>
                         <form className={classes.boxs} onSubmit={signInUser}>
 
-                            <TextField label="Email Address"  sx={{ mb: 3 }} size="small" className={classes.email} onChange={ (e)=> setemail(e.target.value)}/>
-                            <TextField label="Password" sx={{ mb: 3 }} size="small" className={classes.email} onChange={ (e)=> setpassword(e.target.value)}/>
+                            <TextField label="Email Address"  sx={{ mb: 3 }} type='email' size="small" className={classes.email} onChange={ (e)=> setemail(e.target.value)}/>
+                            <TextField label="Password" sx={{ mb: 3 }} type='password' size="small" className={classes.email} onChange={ (e)=> setpassword(e.target.value)}/>
 
                             <div className={classes.formStyle}>
                                 <Button 
@@ -150,7 +169,6 @@ const SignInForm = () => {
                                 <GoogleIcon 
                                 sx={{ width: '30px', height: '30px' }} />
                             </a>
-                            
                             </div>
 
                             <div className={classes.formText}>

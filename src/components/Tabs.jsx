@@ -3,7 +3,8 @@ import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles({
     tabsWrapper:{
-        flex:'30%'
+        flex:'30%',
+        borderLeft:"0.5px solid grey"
     }
 });
 

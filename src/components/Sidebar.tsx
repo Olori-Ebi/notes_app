@@ -3,6 +3,7 @@ import axios from 'axios'
 import { makeStyles } from '@mui/styles';
 import Avatar from '@mui/material/Avatar';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {useCookies} from 'react-cookie'
 import '@fontsource/poppins'
 
 const useStyles = makeStyles({
@@ -47,7 +48,7 @@ const useStyles = makeStyles({
        width:'80%',
        marginTop:'20px',
        marginLeft:'10px',
-       padding:'8px 0 8px 10px',
+       padding:'8px 0 8px 2px',
        borderRadius:'10px',
        transition: 'all 0.3s linear',
        '&:hover':{
@@ -63,12 +64,25 @@ const navtitle=[
 ]
 const Sidebar = () => {
     const [ folders, setFolders ] = useState([])
+    const [Id, setId] = useCookies(['id'])
     useEffect(()=>{
       const getFolders = async()=>{
-         const logs  = await (axios.get('https://notesxd.herokuapp.com/notes/getfolder'))
+        let newId:{token?:string,id?:string} = {...Id}
+        let tokens = newId.token
+        //  const logs  = await (axios.get('https://notesxd.herokuapp.com/notes/getfolder'))
+         let logs = await axios({
+            method : "GET",
+            withCredentials : true,
+            headers:{
+                'x-access-token' : tokens!
+            },
+            url : "https://notesxd.herokuapp.com/notes/getfolder",
+        })
+         console.log(logs.data)
+         
          let data:[] = logs.data as []
 
-        setFolders(data)
+        setFolders(data.reverse())
       }
       getFolders()
     },[]) 
@@ -83,19 +97,27 @@ const Sidebar = () => {
                    <Avatar alt="Remy Sharp" src="https://image.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg" className={classes.icon}/>
                    <h3 style={Textstyles}>{username}</h3>
                 </div>
-                  {folders.length<1? (<h3 style={Textstyles} className={classes.folders}>{folders}</h3>)
-                   :(<h3 style={{display:'none'}}>{folders}</h3>)} 
-               {navtitle.map((el,index)=>(
+                {folders.map((el:{title:string},index)=>(
+                    <div className={classes.folders} key={index}>
+                  <h3 style={Textstyles} className={classes.folders}>{el.title}</h3>
+                  <ExpandMoreIcon className={classes.expandmore}/>
+                  </div>
+                ))}
+
+               {/* {navtitle.map((el,index)=>(
                 <div className={classes.folders} key={index}>
                     <h3 style={Textstyles}>{el.name}</h3>
                     <ExpandMoreIcon className={classes.expandmore}/>
                   </div>
-                 ))}
+                 ))} */}
                
             </div>
         </div>
         </>
     )
 }
+
+ {/* {folders.length<1? (<h3 style={Textstyles} className={classes.folders}>{folders}</h3>) */}
+                   {/* :(<h3 style={{display:'none'}}>{folders}</h3>)}  */}
 
 export default Sidebar 
