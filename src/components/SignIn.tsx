@@ -54,7 +54,7 @@ const useStyles = makeStyles({
   },
   wrapper: {
     backgroundColor: "whitesmoke",
-    height: "100vh",
+    height:'900px'
   },
   boxForm: {
     background: "white",
