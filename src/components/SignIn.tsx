@@ -1,191 +1,183 @@
 import React, { SyntheticEvent, useState } from "react";
-import { makeStyles } from '@mui/styles'
-import { Button, TextField, Box } from "@mui/material";
-import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
-import GoogleIcon from '@mui/icons-material/Google';
-import axios from 'axios';
-import { Link, useHistory } from 'react-router-dom'
-import {useCookies} from 'react-cookie'
-import "@fontsource/poppins"
+import { makeStyles } from "@mui/styles";
+import {
+  Button,
+  TextField,
+  Box,
+  CssBaseline,
+  FormControlLabel,
+  Checkbox,
+  Grid,
+  Link,
+  Typography,
+  Container,
+} from "@mui/material";
+import FacebookRoundedIcon from "@mui/icons-material/FacebookRounded";
+import GoogleIcon from "@mui/icons-material/Google";
+import axios from "axios";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useHistory } from "react-router-dom";
+import "@fontsource/poppins";
+
+function Copyright(props: any) {
+  return (
+    <Typography
+      variant="body2"
+      align="center"
+      {...props}
+      style={{ backgroundColor: "whitesmoke" }}
+    >
+      {"Copyright © "}
+      <Link color="inherit" href="#">
+        NotesXD
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
 
 const useStyles = makeStyles({
-    bodys: {
-        backgroundColor: "whitesmoke",
-        width: "100%",
-        height: "85vh",
-    },
-    boxWrapper: {
-        position: "absolute",
-        height: '60vh',
-        width: '35%',
-        top: "30%",
-        left: "32%",
-        boxShadow: "0 3px 5px 2px rgba(0, 0, 0, .2)",
-        borderRadius: "10px"
-    },
-    boxs: {
-        marginTop: "9.5%",
-        marginLeft: "10%",
-        fontFamily: "poppins"
-    },
-    email: {
-        display: "flex",
-        width: "400px",
-        color: "white",
-        borderRadius: "10px",
-    },
-    btn: {
-        width: "400px",
-    },
-    headerWrapper: {
-        background: '#65c368',
-        height: '10vh',
-        padding: '30px 0 10px 25px'
-    },
-    headerText: {
-        color: 'white',
-        fontFamily: 'poppins',
-        letterSpacing: '1px',
-    },
-    formStyle: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    formText: {
-        textAlign: 'center',
-        marginRight: '40px',
-        marginBottom: '20px',
-        fontFamily: 'poppins',
-        letterSpacing: '1px'
-    },
-    formIcons: {
-        display: 'flex',
-        justifyContent: 'center',
-        marginRight: '40px',
-    },
-    fb: {
-        marginRight: '10px'
-    },
-    signup: {
-        color: 'green'
-    }
+  headerWrapper: {
+    background: "#65c368",
+    height: "15vh",
+    padding: "30px 0 10px 25px",
+    position: "relative",
+  },
+  headerText: {
+    color: "white",
+    fontFamily: "poppins",
+    letterSpacing: "1px",
+    position: "absolute",
+    left: "1%",
+    top: "3%",
+  },
+  wrapper: {
+    backgroundColor: "whitesmoke",
+    height: "100vh",
+  },
+  boxForm: {
+    background: "white",
+  },
+  boxs: {
+    marginTop: "2%",
+    fontFamily: "poppins",
+  },
 });
 
+const theme = createTheme();
+
 const SignInForm = () => {
-    const [email, setemail] = useState("");
-    const [password, setpassword] = useState("");
-    const [warningMessage, setWarningMsg] = useState("")
-    const [cookies, setCookies] = useCookies(['token'])
-    const [Id, setId] = useCookies(['id'])
-    const history = useHistory()
+  const [email, setemail] = useState("");
+  const [password, setpassword] = useState("");
+  const [warningMessage, setWarningMsg] = useState("");
+  const history = useHistory();
 
-    function checkLoginDetails(){
-        if(!email && !password){
-            return false
-        }else {
-            return true
-        }
+  function checkLoginDetails() {
+    if (!email && !password) {
+      return false;
+    } else {
+      return true;
     }
+  }
 
-    async function signInUser(event: SyntheticEvent) {
-        event.preventDefault();
-        const checker = checkLoginDetails()
-        if (!checker){
-           setWarningMsg("Email and Password is Required");
-        }else{
-            const details = {
-                email,
-                password
-            };
-
-            let result = null
-            let result2 = null
-            try{
-                
-                result = await axios({
-                    method : "POST",
-                    data : details,
-                    withCredentials : true,
-                    url : "https://notesxd.herokuapp.com/users/login",
-                })
-                
-                history.push('/homepage')
-            } catch (err:any) {
-                console.log(err, "wertyuio")
-                result = err.response;
-                setWarningMsg("Not a valid Email or Password");
-            }finally {
-                console.log(result.data.token);
-                setCookies('token', result.data.token )
-            }
-            result2 = await axios({
-                method : "GET",
-                // data : details,
-                withCredentials : true,
-                headers:{
-                    'x-access-token' : result.data.token
-                },
-                url : "https://notesxd.herokuapp.com/notes/tests",
-            }) 
-            setId('id', result2.data)
-            console.log(result2)         
-        }
+  async function signInUser(event: SyntheticEvent) {
+    event.preventDefault();
+    const checker = checkLoginDetails();
+    if (!checker) {
+      setWarningMsg("Email and Password is Required");
+    } else {
+      const details = {
+        email,
+        password,
+      };
+      let result;
+      try {
+        result = await axios({
+          method: "POST",
+          data: details,
+          withCredentials: true,
+          url: "https://notesxd.herokuapp.com/users/login",
+        });
+        console.log(result.data);
+        window.localStorage.setItem("user", JSON.stringify(result.data));
+        history.push("/homepage");
+      } catch (err: any) {
+        let errorMsg = err.response.data.error;
+        setWarningMsg(errorMsg);
+      }
     }
+  }
 
-    const classes = useStyles();
-    return (
-         <>
-            <div className={classes.headerWrapper}>
-                    <h1 className={classes.headerText}>SIGN IN</h1>
-            </div>
-                <div className={classes.bodys}>
-                    <Box className={classes.boxWrapper}>
-                        <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"red"}}>{warningMessage}</h5>
-                        <form className={classes.boxs} onSubmit={signInUser}>
-
-                            <TextField label="Email Address"  sx={{ mb: 3 }} type='email' size="small" className={classes.email} onChange={ (e)=> setemail(e.target.value)}/>
-                            <TextField label="Password" sx={{ mb: 3 }} type='password' size="small" className={classes.email} onChange={ (e)=> setpassword(e.target.value)}/>
-
-                            <div className={classes.formStyle}>
-                                <Button 
-                                type="submit" 
-                                className={classes.btn} 
-                                sx={{ color: "white", mb: "30px" }} 
-                                style={{ backgroundColor: '#32A05F' }}>
-                                    SIGN IN
-                                </Button>
-                                
-                                <span style={{ textAlign: 'center', marginRight: '40px', marginBottom: '20px' }}>or</span>
-                                <div className={classes.formText}> Sign in with Social Networks</div>
-                            </div>
-
-                            <div className={classes.formIcons}>
-                            <a href="https://notesxd.herokuapp.com/auth/facebook">
-                                <FacebookRoundedIcon 
-                                className={classes.fb} 
-                                sx={{ width: '30px', height: '30px' }} />
-                            </a> 
-                            <a href="https://notesxd.herokuapp.com/auth/google/">
-                                <GoogleIcon 
-                                sx={{ width: '30px', height: '30px' }} />
-                            </a>
-                            </div>
-
-                            <div className={classes.formText}>
-                                <Link to='/email'>
-                                    <p style={{ marginBottom: '10px' }}>Forgot Password?</p>
-                                </Link>
-                                <p>Don't have an account?
-                                    <Link to='/signup'>
-                                        <span className={classes.signup}> Sign Up</span>
-                                    </Link>
-                                </p>
-                            </div>
-                        </form>
-                    </Box>
-            </div>
-        </>
-    );
+  const classes = useStyles();
+  return (
+    <div className={classes.wrapper}>
+      <div className={classes.headerWrapper}>
+        <h1 className={classes.headerText}>SIGN IN</h1>
+      </div>
+      <ThemeProvider theme={theme}>
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
+          <Box
+            sx={{
+              marginTop: 8,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "20px",
+            }}
+            className={classes.boxForm}
+          >
+            {/* warning message to be refrenced from here */}
+            <h5 style={{ paddingTop: "10px", display: "flex", justifyContent: "center", color: "red", fontSize: "14px",}}>{warningMessage}</h5>
+            <form className={classes.boxs} onSubmit={signInUser}>
+              <TextField margin="normal" size="small" fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus onChange={(e) => setemail(e.target.value)}/>
+              <TextField margin="normal" size="small" fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" onChange={(e) => setpassword(e.target.value)}/>
+              <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me"/>
+              <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: "#32A05F" }} sx={{ mt: 3, mb: 2 }}>
+                SIGN IN
+              </Button>
+              <span style={{ textAlign: "center", marginBottom: "20px" }}>
+                or
+              </span>
+              <div style={{ fontSize: "12px" }}>
+                {" "}
+                Sign in with Social Networks
+              </div>
+              <div>
+                <a href="https://notesxd.herokuapp.com/auth/facebook">
+                  <FacebookRoundedIcon
+                    sx={{ width: "30px", height: "30px" }}
+                    style={{ color: "#32A05F" }}
+                  />
+                </a>
+                <a href="https://notesxd.herokuapp.com/auth/google/">
+                  <GoogleIcon
+                    sx={{ width: "30px", height: "30px" }}
+                    style={{ color: "#32A05F" }}
+                  />
+                </a>
+              </div>
+              <Grid container style={{ display: "inline" }}>
+                <Grid item xs>
+                  <Link href="/email" variant="body2">
+                    Forgot password?
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link href="/Signup" variant="body2">
+                    {"Don't have an account? Sign Up"}
+                  </Link>
+                </Grid>
+              </Grid>
+            </form>
+          </Box>
+          <Copyright sx={{ mt: 10, mb: 2 }} />
+        </Container>
+      </ThemeProvider>
+    </div>
+  );
 };
 
 export default SignInForm;
+

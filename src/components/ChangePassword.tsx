@@ -3,7 +3,6 @@ import { makeStyles } from '@mui/styles'
 import { Button, TextField, Box } from "@mui/material";
 import "@fontsource/poppins"
 import axios from "axios";
-import {useCookies} from 'react-cookie'
 import { useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles({
@@ -48,18 +47,20 @@ const useStyles = makeStyles({
 });
 
 const ChangePasswordForm = () => {
+
+  let userDetails = window.localStorage.getItem('user')!
+
   const [oldpassword, setoldpassword] = useState("");
   const [newpassword, setnewpassword] = useState("");
   const [confirmpassword, setconfirmpassword] = useState("")
   const [warningMessage, setWarningMsg] = useState("")
-  const [Id, setId] = useCookies(['id'])
   const history = useHistory()
 
   function checkDetails(){
     if(!(oldpassword && newpassword && confirmpassword)){
-      return false
+      return "incomplete"
     }else if (newpassword !== confirmpassword){
-      return false
+      return "unmatch"
     }else {
       return true
     }
@@ -69,38 +70,37 @@ const ChangePasswordForm = () => {
     
     const checker = checkDetails()
     console.log(checker)
-    if(!checker){
-      setWarningMsg(" All Password Fields are required")
-    }else{
+    if(checker === "incomplete"){
+     return  setWarningMsg(" All Password Fields are required")
+    }
+    if(checker === "unmatch"){
+      return  setWarningMsg("Password dosent match")
+    }
       const details = {
         oldPassword:oldpassword,
         newPassword:newpassword,
         confirmPassword:confirmpassword
       }
       let result = null
-      let newId:{token?:string,id?:string} = {...Id}
-    let tokens = newId.token
-    console.log(tokens)
       try{
         result = await axios({
             method : "POST",
             data : details,
             headers:{
-                'x-access-token' : tokens!
+                'authorization' : JSON.parse(userDetails).token
             },
             withCredentials : true,
             url : "https://notesxd.herokuapp.com/users/changePassword",
         })
-        console.log(Id,result)
             setWarningMsg("Password updated successfully");
             history.push('/homepage')
       }catch(err:any){
         result = err.response
-        setWarningMsg("Incorrect Password")
+        setWarningMsg("Incorrect Old Password")
       }finally {
         console.log(result, "sdfgh");
       }
-    }
+    
   }
     const classes = useStyles();
       return (

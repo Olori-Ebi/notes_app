@@ -69,7 +69,6 @@ const Sidebar = () => {
       const getFolders = async()=>{
         let newId:{token?:string,id?:string} = {...Id}
         let tokens = newId.token
-        //  const logs  = await (axios.get('https://notesxd.herokuapp.com/notes/getfolder'))
          let logs = await axios({
             method : "GET",
             withCredentials : true,
@@ -88,7 +87,7 @@ const Sidebar = () => {
     },[]) 
 
     const classes = useStyles();
-    const username ="Chiemere"
+    const username ="Benedict"
     return (
         <>
         <div className={classes.sidebarWrapper}>
@@ -103,21 +102,11 @@ const Sidebar = () => {
                   <ExpandMoreIcon className={classes.expandmore}/>
                   </div>
                 ))}
-
-               {/* {navtitle.map((el,index)=>(
-                <div className={classes.folders} key={index}>
-                    <h3 style={Textstyles}>{el.name}</h3>
-                    <ExpandMoreIcon className={classes.expandmore}/>
-                  </div>
-                 ))} */}
                
             </div>
         </div>
         </>
     )
 }
-
- {/* {folders.length<1? (<h3 style={Textstyles} className={classes.folders}>{folders}</h3>) */}
-                   {/* :(<h3 style={{display:'none'}}>{folders}</h3>)}  */}
 
 export default Sidebar 

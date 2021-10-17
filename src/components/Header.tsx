@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@mui/styles';
 import Badge from '@mui/material/Badge';
+import {useCookies} from 'react-cookie'
+import axios from 'axios'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -60,6 +62,37 @@ const useStyles = makeStyles({
 })
 const Header:React.FC = () => {
     const classes = useStyles();
+    const [ notification, setNotification ] = useState('0')
+    const [Id, setId] = useCookies(['id'])
+    
+
+    useEffect(()=>{
+        const getFolders = async()=>{
+          let newId:{token?:string,id?:string} = {...Id}
+          let tokens = newId.token
+          //  const logs  = await (axios.get('https://notesxd.herokuapp.com/notes/getfolder'))
+           let logs = await axios({
+              method : "GET",
+              withCredentials : true,
+              headers:{
+                  'x-access-token' : tokens!
+              },
+              url : "https://notesxd.herokuapp.com/notes/getNotification",
+          })
+           console.log(logs.data)
+           let data
+           data = '0'
+           if(Array.isArray(logs.data)){
+             data = logs.data.length as number
+           }
+           
+           
+  
+          setNotification(data.toString())
+          console.log(notification)
+        }
+        getFolders()
+      },[]) 
     return (
         <>
            <div className={classes.headerWrapper}>
@@ -69,7 +102,7 @@ const Header:React.FC = () => {
                   <input className ={classes.headerSearchIn} type ="text" placeholder='Search'/>  
                   <SearchIcon className ={classes.headerSearchIcon}/>
                 </div>
-                 <Badge badgeContent={4} color="error">
+                 <Badge badgeContent={notification} color="error">
                     <NotificationsNoneIcon color="action" sx={{ fontSize:30}}/>
                  </Badge>
             </div> 

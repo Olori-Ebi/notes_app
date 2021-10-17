@@ -98,7 +98,6 @@ const SignUpForm = () => {
             setShowWarning(true)
         } else {
             setShowWarning(false);
-            //submit user details
             const details = {
                 firstName: firstname,
                 lastName: lastname,
@@ -112,10 +111,8 @@ const SignUpForm = () => {
                     alert("success!")
                     console.log(response)
                 }).catch(err => {
-                    console.log(err.response.data);
-                    setWarningMsg(err.response.data);
+                    setWarningMsg(err.response.data.replace('\"',"").replace('\"',""));
                     setShowWarning(true)
-                    // alert(`Error occurred: ${err.response.data}`)
             })
         }
     }
@@ -130,44 +127,38 @@ const SignUpForm = () => {
                 <Box className={classes.boxWrapper}>
                     <form className={classes.boxs} onSubmit={signUpUser}>
 
-                        <TextField 
-                        label='First Name' 
-                        placeholder='First Name' 
+                        <TextField label='First Name' 
                         className={classes.email} 
                         sx={{ mb: '20px' }} 
                         size="small" 
-                        onChange={(e) => setfirstname(e.target.value)} required />
+                        onChange={(e) => setfirstname(e.target.value)}  />
 
                         <TextField 
                         label='Last Name' 
-                        placeholder='Last Name' 
                         className={classes.email} 
                         sx={{ mb: '20px' }} 
                         size="small" 
-                        onChange={(e) => setlastname(e.target.value)} required />
+                        onChange={(e) => setlastname(e.target.value)}  />
 
                         <TextField 
-                        label='Email Address' 
-                        placeholder='Email Address' 
+                        label='Email Address'  
                         type='email' sx={{ mb: '20px' }} 
                         size="small" className={classes.email} 
-                        onChange={(e) => setemail(e.target.value)} required />
+                        onChange={(e) => setemail(e.target.value)} />
 
                         <TextField 
                         label='Password' 
-                        placeholder='Enter password' 
                         type='password' sx={{ mb: '20px' }} 
                         size="small" className={classes.email} 
-                        onChange={(e) => setpassword(e.target.value)} required />
+                        onChange={(e) => setpassword(e.target.value)} />
 
                         <TextField 
-                        label='Repeat Password' 
-                        placeholder='Repeat Password' 
+                        label='Repeat Password'  
                         type='password' 
                         sx={{ mb: '20px' }} 
                         size="small" 
                         className={classes.email} 
-                        onChange={(e) => setrepeatPassword(e.target.value)} required />
+                        onChange={(e) => setrepeatPassword(e.target.value)} />
 
                         {showWarning && <p style={{ margin: "5px 0 5px 0", color: "red" }}> {warningMessage} </p>}
                         <div className={classes.formStyle}>
@@ -188,12 +179,11 @@ const SignUpForm = () => {
                             <FacebookRoundedIcon 
                             className={classes.fb} 
                             sx={{ width: '30px', height: '30px' }} />
-                            </a>
-                            
-                            <a href="https://notesxd.herokuapp.com/auth/google/">
+                        </a>
+                        <a href="https://notesxd.herokuapp.com/auth/google/">
                             <GoogleIcon 
                             sx={{ width: '30px', height: '30px' }} />
-                            </a>
+                        </a>
                         </div>
                         <div className={classes.formText}>
                             <p>Already have an account?
