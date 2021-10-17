@@ -20,42 +20,6 @@ function Copyright(props: any) {
 }
 
 const useStyles = makeStyles({
-//   bodys:{
-//     backgroundColor:"whitesmoke",
-//     width:"100%",
-//     height:"85vh",
-//   },
-//   boxWrapper:{
-//     position:"absolute",
-//     top:"30%",
-//     left:"32%",
-//     boxShadow:"0 3px 5px 2px rgba(0, 0, 0, .2)",
-//     borderRadius:"10px"
-//  },
-//   boxs:{ 
-//     marginTop:"9.5%",
-//     marginLeft:"10%",
-//     fontFamily:"poppins"
-//  },
-//   email:{
-//     display: "flex",
-//     width: "400px",
-//     color:"white",
-//     borderRadius:"10px",   
-//   },
-//   btn:{
-//     width: "400px",
-//   },
-//   headerWrapper:{
-//     background:'#65c368',
-//     height:'10vh',
-//     padding:'30px 0 10px 25px'
-//   },
-//   headerText:{
-//       color:'white',
-//       fontFamily:'poppins',
-//       letterSpacing:'1px'
-//   }
 headerWrapper:{
   background: '#65c368',
   height: '15vh',
@@ -89,7 +53,7 @@ const PasswordInput =() => {
     const [password, setpassword] = useState("");
     const [repeatPassword, setrepeatPassword] = useState("");
     const [warningMessage, setWarningMsg] = useState("")
-    const [alertMessage, setAlertMsg] = useState("")
+    //const [alertMessage, setAlertMsg] = useState("")
     let params:{token:string} = useParams()
     const history = useHistory()
     function validatePassword() {
@@ -137,8 +101,8 @@ const PasswordInput =() => {
       {/* <div className={classes.bodys}> */}
       <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}>{warningMessage}</h5>
       <form className={classes.boxs} onSubmit={userPassword}>
-        <TextField margin="normal" size="small" required fullWidth name="New Password" label="New Password" type="password" id="password" autoComplete="current-password" onChange={ (e)=> setpassword(e.target.value)}/>
-        <TextField margin="normal" size="small" required fullWidth name="Re-Enter New Password" label="Re-Enter New Password" type="password" id="password" autoComplete="current-password" onChange={ (e)=> setrepeatPassword(e.target.value)} />
+        <TextField margin="normal" size="small" fullWidth name="New Password" label="New Password" type="password" id="password" autoComplete="current-password" onChange={ (e)=> setpassword(e.target.value)}/>
+        <TextField margin="normal" size="small" fullWidth name="Re-Enter New Password" label="Re-Enter New Password" type="password" id="password" autoComplete="current-password" onChange={ (e)=> setrepeatPassword(e.target.value)} />
       <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me"/>
       <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: '#32A05F' }} sx={{ mt: 3, mb: 2 }}>
           SUBMIT

@@ -35,7 +35,7 @@ top:'3%'
 },
 wrapper:{
   backgroundColor: "whitesmoke",
-  height:'100vh'
+  height:'900px'
 },
 boxForm:{
   background:'white'
@@ -69,7 +69,7 @@ async function userEmail(event: SyntheticEvent){
         setWarningMsg("A Mail has been sent to you to verify your email")
       } catch (err:any) {
         apiRes = err.response;
-        setWarningMsg(err.response.data.error);
+        setWarningMsg(err.response.data.message);
       } finally {
         console.log(apiRes);
       }
@@ -89,7 +89,7 @@ async function userEmail(event: SyntheticEvent){
             {/* warning message to be refrenced from here */}
          <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}>{warningMessage}</h5>
           <form className={classes.boxs} onSubmit={userEmail}>
-                <TextField margin="normal" size="small" required fullWidth id="email" label="Email" name="email" autoComplete="email" autoFocus onChange={ (e)=> setemail(e.target.value)}/>
+                <TextField margin="normal" size="small" fullWidth id="email" label="Email" name="email" autoComplete="email" autoFocus onChange={ (e)=> setemail(e.target.value)}/>
                 <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: '#32A05F' }} sx={{ mt: 3, mb: 2 }}>
                   SUBMIT
                 </Button> 
