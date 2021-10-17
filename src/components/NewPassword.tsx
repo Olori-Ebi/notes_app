@@ -1,49 +1,89 @@
 import React, {SyntheticEvent, useState} from "react";
 import axios from 'axios'
 import { makeStyles } from '@mui/styles'
-import { Button, TextField, Box } from "@mui/material";
+import { Button, TextField, Box, Container, Typography, CssBaseline, Link, FormControlLabel, Checkbox }from "@mui/material";
 import "@fontsource/poppins"
 import { useParams, useHistory } from "react-router-dom";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+function Copyright(props: any) {
+  return (
+    <Typography variant="body2" align="center" {...props} style={{backgroundColor:'whitesmoke'}}>
+      {'Copyright © '}
+      <Link color="inherit" href="#">
+        NotesXD
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
 
 const useStyles = makeStyles({
-  bodys:{
-    backgroundColor:"whitesmoke",
-    width:"100%",
-    height:"85vh",
-  },
-  boxWrapper:{
-    position:"absolute",
-    top:"30%",
-    left:"32%",
-    boxShadow:"0 3px 5px 2px rgba(0, 0, 0, .2)",
-    borderRadius:"10px"
- },
-  boxs:{ 
-    marginTop:"9.5%",
-    marginLeft:"10%",
-    fontFamily:"poppins"
- },
-  email:{
-    display: "flex",
-    width: "400px",
-    color:"white",
-    borderRadius:"10px",   
-  },
-  btn:{
-    width: "400px",
-  },
-  headerWrapper:{
-    background:'#65c368',
-    height:'10vh',
-    padding:'30px 0 10px 25px'
-  },
-  headerText:{
-      color:'white',
-      fontFamily:'poppins',
-      letterSpacing:'1px'
-  }
+//   bodys:{
+//     backgroundColor:"whitesmoke",
+//     width:"100%",
+//     height:"85vh",
+//   },
+//   boxWrapper:{
+//     position:"absolute",
+//     top:"30%",
+//     left:"32%",
+//     boxShadow:"0 3px 5px 2px rgba(0, 0, 0, .2)",
+//     borderRadius:"10px"
+//  },
+//   boxs:{ 
+//     marginTop:"9.5%",
+//     marginLeft:"10%",
+//     fontFamily:"poppins"
+//  },
+//   email:{
+//     display: "flex",
+//     width: "400px",
+//     color:"white",
+//     borderRadius:"10px",   
+//   },
+//   btn:{
+//     width: "400px",
+//   },
+//   headerWrapper:{
+//     background:'#65c368',
+//     height:'10vh',
+//     padding:'30px 0 10px 25px'
+//   },
+//   headerText:{
+//       color:'white',
+//       fontFamily:'poppins',
+//       letterSpacing:'1px'
+//   }
+headerWrapper:{
+  background: '#65c368',
+  height: '15vh',
+  padding: '30px 0 10px 25px',
+  position:'relative',
+},
+headerText:{
+color: 'white',  
+fontFamily: 'poppins',
+letterSpacing: '1px',
+position:'absolute',
+left:'1%',
+top:'3%'
+},
+wrapper:{
+  backgroundColor: "whitesmoke",
+  height:'100vh'
+},
+boxForm:{
+  background:'white'
+},
+boxs:{ 
+  marginTop:"2%",
+  fontFamily:"poppins"
+},
 });
+
+const theme = createTheme();
  
 const PasswordInput =() => {
     const [password, setpassword] = useState("");
@@ -63,7 +103,7 @@ const PasswordInput =() => {
     event.preventDefault();
     const passwordMatch = validatePassword()
     if(!passwordMatch){
-      setAlertMsg("Password do not match please check your password entry and try again!")
+      setWarningMsg("Password do not match please check your password entry and try again!")
     }else{
       const details = { 
         password,
@@ -73,10 +113,11 @@ const PasswordInput =() => {
       let apiRes = null
       try{
         apiRes = await axios.post("https://notesxd.herokuapp.com/users/reset", details)
+        setWarningMsg("Password Changed Successfully")
         history.push('/')
       } catch (err:any) {
         apiRes = err.response;
-        setWarningMsg(err.response.data.message);
+        setWarningMsg(err.response.data.error);
       } finally {
           console.log(apiRes);
       }
@@ -85,23 +126,29 @@ const PasswordInput =() => {
 
     const classes = useStyles();
     return (
-      <>
+      <div  className={classes.wrapper}>
       <div className={classes.headerWrapper}>
           <h1 className={classes.headerText}>FORGOT PASSWORD</h1>
       </div>
-      <div className={classes.bodys}>
-    <Box className={classes.boxWrapper} sx={{ width: 500, height:300}}>
-      <h5 style={{paddingTop:"10px",display:"flex", justifyContent:"center", color:"red"}}>{alertMessage}</h5>
+      <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', padding:'20px'}} className={classes.boxForm}>
+      {/* <div className={classes.bodys}> */}
+      <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}>{warningMessage}</h5>
       <form className={classes.boxs} onSubmit={userPassword}>
-        <TextField label="New Password" helperText={`${warningMessage}`} type='password' sx={{ mb:3}} size="small" className={classes.email} onChange={ (e)=> setpassword(e.target.value)}/>
-        <TextField label="Re-Enter New Password" helperText={`${warningMessage}`} type='password' size="small" className={classes.email} onChange={ (e)=> setrepeatPassword(e.target.value)} />
-        <Button type="submit" className={classes.btn} sx={{ color:"white", mt:3 }} style={{ backgroundColor: '#32A05F'}}>
+        <TextField margin="normal" size="small" required fullWidth name="New Password" label="New Password" type="password" id="password" autoComplete="current-password" onChange={ (e)=> setpassword(e.target.value)}/>
+        <TextField margin="normal" size="small" required fullWidth name="Re-Enter New Password" label="Re-Enter New Password" type="password" id="password" autoComplete="current-password" onChange={ (e)=> setrepeatPassword(e.target.value)} />
+      <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me"/>
+      <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: '#32A05F' }} sx={{ mt: 3, mb: 2 }}>
           SUBMIT
         </Button> 
       </form> 
     </Box>
+    <Copyright sx={{ mt: 28, mb: 2 }} />
+      </Container>
+    </ThemeProvider>
     </div>
-    </>
   );
 };
 

@@ -12,6 +12,7 @@ const RedirectLogin =  () => {
            apiRes = async()=>{
            return await axios.get(`https://notesxd.herokuapp.com/users/confirm/${token}`)
              }
+             apiRes()
            history.push('/')
         } catch (err:any) {
            apiRes = err.response;

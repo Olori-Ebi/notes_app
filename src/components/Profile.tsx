@@ -1,8 +1,7 @@
 import React, {SyntheticEvent, useState} from "react";
 import { makeStyles } from '@mui/styles'
-import { Button, TextField, Box } from "@mui/material";
+import { Button, TextField, Box, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import Avatar from '@mui/material/Avatar';
-import {useCookies} from 'react-cookie'
 import "@fontsource/poppins"
 import axios from "axios";
 import { useHistory } from 'react-router-dom'
@@ -59,44 +58,69 @@ const useStyles = makeStyles({
       marginBottom:'20px',
   },
 });
+
+interface userdet {
+  firstName : string
+  lastName: string
+  email: string
+  about : string
+  location : string
+  id: string
+  gender: string
+  avatar : string
+}
   
 const ProfileForm = () => {
-  const [firstName, setfirstname] = useState("");
-  const [lastName, setlastname] = useState("");
-  const [email, setemail] = useState("");
-  const [location, setlocation] = useState("")
-  const [about, setabout] = useState("");
-  const [warningMessage, setWarningMsg] = useState("")
-  const [Id, setId] = useCookies(['id'])
-  const [cookies, setCookies] = useCookies(['token'])
-  const history = useHistory()
 
+  let userDetails = window.localStorage.getItem('user')!
+  let Det:userdet = JSON.parse(userDetails).user
+console.log(Det, "werty")
+
+
+  const [firstName, setfirstname] = useState(Det.firstName);
+  const [lastName, setlastname] = useState(Det.lastName);
+  const [email, setemail] = useState(Det.email);
+  const [location, setlocation] = useState(Det.location)
+  const [about, setabout] = useState(Det.about);
+  const [warningMessage, setWarningMsg] = useState("")
+  const [genderselect, setGenderselect] = useState(Det.gender)
+  const history = useHistory()
 
 const EditProfile = async (event: SyntheticEvent) => {
     event.preventDefault()
-    const details = {
+    console.log(genderselect)
+    const detail = {
       firstName,
       lastName,
-      email,
       location,
+      email,
+      gender:genderselect,
       about
     }
     let result = null
-    console.log(Id.id)
-    let newId:{token?:string,id?:string} = {...Id}
-    let tokens = newId.token
     try{
       result = await axios({
         method : "PUT",
-        data : details,
+        data : detail,
         headers:{
-            'x-access-token' : tokens!
+            'authorization' : JSON.parse(userDetails).token
         },
         withCredentials : true,
-        url : `https://notesxd.herokuapp.com/users/${Id.id}`,
+        url : "https://notesxd.herokuapp.com/users/update",
     })
+    console.log(result)
         setWarningMsg("Profile updated successfully");
+        const newDetails = {
+          token: JSON.parse(userDetails).token,
+          user:{
+            ...detail,
+            email
+          }
+        }
+        
+        window.localStorage.setItem('user', JSON.stringify(newDetails))
         history.push('/homepage')
+        
     }catch(err:any){
       result = err.message
       setWarningMsg(err.response.data.message);
@@ -115,11 +139,18 @@ const EditProfile = async (event: SyntheticEvent) => {
       <h4 style={{paddingTop:"20px", display:"flex", justifyContent:"center", color:"#65c368"}}>{warningMessage}</h4>
         <form className={classes.boxs} onSubmit={EditProfile}>
           <Avatar alt="Remy Sharp" src="https://image.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg" className={classes.icon}  sx={{ width: 76, height: 76 }}/>
-          <TextField label="firstName" sx={{ mb:3}} size="small" className={classes.email} onChange={(e)=>setfirstname(e.target.value)}/>
-          <TextField label="lastName" sx={{ mb:3}} size="small" className={classes.email} onChange={(e)=>setlastname(e.target.value)}/>
-          <TextField label="Email" size="small" sx={{ mb:3}} className={classes.email} onChange={(e)=>setemail(e.target.value)}/>
-          <TextField label="Location" size="small" sx={{ mb:3}} className={classes.email} onChange={(e)=>setlocation(e.target.value)}/>
-          <TextField label="About" size="medium" className={classes.emailText} onChange={(e)=>setabout(e.target.value)}/>
+          <TextField label="Firstname" sx={{ mb:3}} defaultValue={Det.firstName} size="small" className={classes.email} onChange={(e)=>setfirstname(e.target.value)}/>
+          <TextField label="Lastname" sx={{ mb:3}} size="small" defaultValue={Det.lastName} className={classes.email} onChange={(e)=>setlastname(e.target.value)}/>
+          <TextField label="Email" disabled size="small" sx={{ mb:3}} defaultValue={Det.email} className={classes.email} onChange={(e)=>setemail(e.target.value)}/>
+          <FormControl sx={{ mb:3}} size="small" className={classes.email}>
+          <InputLabel id="demo-simple-select-label" >Gender</InputLabel>
+            <Select labelId="demo-simple-select-label" defaultValue={genderselect} id="demo-simple-select" label="Gender" onChange={(e)=>setGenderselect(e.target.value)}>
+              <MenuItem value="male" style={{ backgroundColor: '#32A05F'}}>Male</MenuItem>
+              <MenuItem value="female" style={{ backgroundColor: '#32A05F'}}>Female</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField label="Location" size="small" sx={{ mb:3}} defaultValue={Det.location} className={classes.email} onChange={(e)=>setlocation(e.target.value)}/>
+          <TextField label="About" size="medium" className={classes.emailText} defaultValue={Det.about} onChange={(e)=>setabout(e.target.value)}/>
           <Button
           type="submit"
           className={classes.btn} 
