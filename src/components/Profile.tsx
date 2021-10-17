@@ -1,64 +1,106 @@
 import React, {SyntheticEvent, useState} from "react";
 import { makeStyles } from '@mui/styles'
-import { Button, TextField, Box, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
+import { Button, TextField, Box, Select, MenuItem, InputLabel, FormControl, CssBaseline, FormControlLabel, Checkbox, Link, Typography, Container    } from "@mui/material";
 import Avatar from '@mui/material/Avatar';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import "@fontsource/poppins"
 import axios from "axios";
 import { useHistory } from 'react-router-dom'
 
+function Copyright(props: any) {
+  return (
+    <Typography variant="body2" align="center" {...props} style={{backgroundColor:'whitesmoke'}}>
+      {'Copyright © '}
+      <Link color="inherit" href="#">
+        NotesXD
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
+
 const useStyles = makeStyles({
-    bodys:{
-      backgroundColor:"whitesmoke",
-      width:"100%",
-      height:"85vh",
-      position:'relative',
-    },
-    emailText:{
-      display: "flex",
-      width: "400px",
-      color:"white",
-      borderRadius:"10px",
-    },
-    boxWrapper:{
-      position:"absolute",
-      width:'35%',
-      height:'80vh',
-      top:"10%",
-      left:"32%",
-      boxShadow:"0 3px 5px 2px rgba(0, 0, 0, .2)",
-      borderRadius:"10px"
-   },
-    boxs:{ 
-      marginTop:"9.5%",
-      marginLeft:"10%",
-      fontFamily:"poppins"
-   },
-    email:{
+  //   bodys:{
+  //     backgroundColor:"whitesmoke",
+  //     width:"100%",
+  //     height:"85vh",
+  //     position:'relative',
+  //   },
+  //   emailText:{
+  //     display: "flex",
+  //     width: "400px",
+  //     color:"white",
+  //     borderRadius:"10px",
+  //   },
+  //   boxWrapper:{
+  //     position:"absolute",
+  //     width:'35%',
+  //     height:'80vh',
+  //     top:"10%",
+  //     left:"32%",
+  //     boxShadow:"0 3px 5px 2px rgba(0, 0, 0, .2)",
+  //     borderRadius:"10px"
+  //  },
+  //   boxs:{ 
+  //     marginTop:"9.5%",
+  //     marginLeft:"10%",
+  //     fontFamily:"poppins"
+  //  },
+  //   email:{
+  //     display: "flex",
+  //     width: "400px",
+  //     color:"white",
+  //     borderRadius:"10px",   
+  //   },
+  //   btn:{
+  //     width: "400px",
+  //   },
+  //   headerWrapper:{
+  //     background:'#65c368',
+  //     height:'10vh',
+  //     padding:'30px 0 10px 25px'
+  //   },
+  //   headerText:{
+  //       color:'white',
+  //       fontFamily:'poppins',
+  //       letterSpacing:'1px'
+  //   },
+  //   icon:{
+  //     position:'absolute',
+  //     left:'35%',
+  //     marginBottom:'20px',
+  // },
+  headerWrapper:{
+    background: '#65c368',
+    height: '15vh',
+    padding: '30px 0 10px 25px',
+    position:'relative',
+},
+headerText:{
+color: 'white',
+fontFamily: 'poppins',
+letterSpacing: '1px',
+position:'absolute',
+left:'1%',
+top:'3%'
+},
+wrapper:{
+    backgroundColor: "whitesmoke",
+    height:'950px'
+},
+boxForm:{
+    background:'white'
+},
+email:{
       display: "flex",
       width: "400px",
       color:"white",
       borderRadius:"10px",   
-    },
-    btn:{
-      width: "400px",
-    },
-    headerWrapper:{
-      background:'#65c368',
-      height:'10vh',
-      padding:'30px 0 10px 25px'
-    },
-    headerText:{
-        color:'white',
-        fontFamily:'poppins',
-        letterSpacing:'1px'
-    },
-    icon:{
-      position:'absolute',
-      left:'35%',
-      marginBottom:'20px',
-  },
+    }
 });
 
+const theme = createTheme();
 interface userdet {
   firstName : string
   lastName: string
@@ -130,38 +172,40 @@ const EditProfile = async (event: SyntheticEvent) => {
   }
     const classes = useStyles();
      return (
-       <>
+      <div  className={classes.wrapper}>
         <div className={classes.headerWrapper}>
             <h1 className={classes.headerText}>PROFILE</h1>
         </div>
-      <div className={classes.bodys}>
-      <Box className={classes.boxWrapper}>
-      <h4 style={{paddingTop:"20px", display:"flex", justifyContent:"center", color:"#65c368"}}>{warningMessage}</h4>
-        <form className={classes.boxs} onSubmit={EditProfile}>
-          <Avatar alt="Remy Sharp" src="https://image.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg" className={classes.icon}  sx={{ width: 76, height: 76 }}/>
-          <TextField label="Firstname" sx={{ mb:3}} defaultValue={Det.firstName} size="small" className={classes.email} onChange={(e)=>setfirstname(e.target.value)}/>
-          <TextField label="Lastname" sx={{ mb:3}} size="small" defaultValue={Det.lastName} className={classes.email} onChange={(e)=>setlastname(e.target.value)}/>
-          <TextField label="Email" disabled size="small" sx={{ mb:3}} defaultValue={Det.email} className={classes.email} onChange={(e)=>setemail(e.target.value)}/>
-          <FormControl sx={{ mb:3}} size="small" className={classes.email}>
+        <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box sx={{ marginTop: 7, display: 'flex', flexDirection: 'column', alignItems: 'center', padding:'20px'}} className={classes.boxForm}>
+            {/* warning message to be refrenced from here */}
+        <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}>{warningMessage}</h5>
+        <Avatar sx={{bgcolor: 'secondary.main',width: 80, height: 80}} alt="Remy Sharp" src="/static/images/avatar/1.jpg"></Avatar>
+      <Box component="form" onSubmit={EditProfile} noValidate sx={{ mt: 1 }}>
+          <TextField margin="normal" size="small" fullWidth id="first name" label="First Name" name="First Name" autoFocus defaultValue={Det.firstName} onChange={(e)=>setfirstname(e.target.value)}/>
+          <TextField margin="normal" size="small" fullWidth id="last name" label="Last Name" name="Last Name" autoFocus defaultValue={Det.lastName} onChange={(e)=>setlastname(e.target.value)}/>
+          <TextField margin="normal" size="small" fullWidth id="email" disabled label="Email Address" name="Email" autoComplete="email" autoFocus defaultValue={Det.email} onChange={(e)=>setemail(e.target.value)}/>
+          <FormControl margin="normal" fullWidth sx={{ mt:3}} size="small" className={classes.email}>
           <InputLabel id="demo-simple-select-label" >Gender</InputLabel>
             <Select labelId="demo-simple-select-label" defaultValue={genderselect} id="demo-simple-select" label="Gender" onChange={(e)=>setGenderselect(e.target.value)}>
               <MenuItem value="male" style={{ backgroundColor: '#32A05F'}}>Male</MenuItem>
               <MenuItem value="female" style={{ backgroundColor: '#32A05F'}}>Female</MenuItem>
             </Select>
           </FormControl>
-          <TextField label="Location" size="small" sx={{ mb:3}} defaultValue={Det.location} className={classes.email} onChange={(e)=>setlocation(e.target.value)}/>
-          <TextField label="About" size="medium" className={classes.emailText} defaultValue={Det.about} onChange={(e)=>setabout(e.target.value)}/>
-          <Button
-          type="submit"
-          className={classes.btn} 
-          sx={{ color:"white", mt:3 }} 
-          style={{ backgroundColor: '#32A05F'}}>
+          <TextField margin="normal" size="small" fullWidth id="location" label="Location" name="location" autoComplete="location" autoFocus defaultValue={Det.location} onChange={(e)=>setlocation(e.target.value)}/>
+          <TextField margin="normal" size="small" fullWidth id="about" label="About" name="about" autoComplete="about" autoFocus defaultValue={Det.about} onChange={(e)=>setabout(e.target.value)}/>
+          <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me"/>
+          <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: '#32A05F' }} sx={{ mt: 3, mb: 2 }}>
           UPDATE
           </Button> 
-        </form> 
+        </Box>
     </Box>
-    </div>   
-    </>
+      <Copyright sx={{ mt: 6, mb: 2 }} />
+    </Container>
+    </ThemeProvider>
+    </div>
   );
 };
 export default ProfileForm;
