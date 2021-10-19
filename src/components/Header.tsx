@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@mui/styles';
 import { styled, alpha } from '@mui/material/styles';
 import '@fontsource/noto-sans'
@@ -7,9 +7,14 @@ import Badge from '@mui/material/Badge';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
+import axios from 'axios'
 
 const useStyles = makeStyles({
     headerWrapper:{
+      // width: "100%",
+      // position:"fixed",
+      // top: 0,
+      // zIndex: 2,
      background:'#F8F8F8',
      display:'flex',
      justifyContent:'space-between',
@@ -77,8 +82,51 @@ const Search = styled('div')(({ theme }) => ({
     },
   }));
   
+  interface userdet {
+    firstName : string
+    lastName: string
+    email: string
+    about : string
+    location : string
+    id: string
+    gender: string
+    avatar : string
+  }
+
 const tname = 'notes'
 const Header:React.FC = () => {
+
+  let userDetails = window.localStorage.getItem('user')!
+    let Det:userdet = JSON.parse(userDetails).user
+
+  const [ notifications, setNotification ] = useState('0')
+  useEffect(()=>{
+    const getFolders = async()=>{
+      // let newId:{token?:string,id?:string} = {...Id}
+      // let tokens = newId.token
+       let logs = await axios({
+          method : "GET",
+          withCredentials : true,
+          headers:{
+              'authorization' : JSON.parse(userDetails).token
+          },
+          url : "https://notesxd.herokuapp.com/notes/getNotification",
+      })
+       console.log(logs.data, "12")
+       
+       let data
+           data = '0'
+           if(Array.isArray(logs.data)){
+             data = logs.data.length as number
+           }
+           
+          setNotification(data.toString())
+          console.log(notifications)
+      //  setNotification(data.reverse())
+    }
+    getFolders()
+},[])
+
     const classes = useStyles();
     return (
         <>
@@ -95,7 +143,7 @@ const Header:React.FC = () => {
                    />
                </Search>
 
-               <Badge badgeContent={4} color="error">
+               <Badge badgeContent={notifications} color="error">
                     <NotificationsNoneIcon color="action" sx={{ fontSize:30}}/>
                  </Badge>
             </div>

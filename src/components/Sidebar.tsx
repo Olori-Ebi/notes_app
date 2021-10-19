@@ -105,61 +105,104 @@ const navtitle=[
     {name:'FOLDER 1'},
     {name:'FOLDER 2'}
 ]
+interface userdet {
+    firstName : string
+    lastName: string
+    email: string
+    about : string
+    location : string
+    id: string
+    gender: string
+    avatar : string
+  }
 const Sidebar = () => {
+    let userDetails = window.localStorage.getItem('user')!
+    let Det:userdet = JSON.parse(userDetails).user
+
     const [menu, setMenu ] = useState(false)
     const [submenu, setSubmenu ] = useState(false)
     const [ folders, setFolders ] = useState([])
+    // useEffect(()=>{
+    //   const getFolders = async()=>{
+    //      const logs  = await (axios.get('https://notesxd.herokuapp.com/notes/getfolder'))
+    //      let data:[] = logs.data as []
+    //      console.log(logs, "asdfghj")
+    //     setFolders(data)
+    //   }
+    //   getFolders()
+    // },[]) 
+
     useEffect(()=>{
-      const getFolders = async()=>{
-         const logs  = await (axios.get('https://notesxd.herokuapp.com/notes/getfolder'))
-         let data:[] = logs.data as []
-        setFolders(data)
-      }
-      getFolders()
-    },[]) 
+              const getFolders = async()=>{
+                // let newId:{token?:string,id?:string} = {...Id}
+                // let tokens = newId.token
+                 let logs = await axios({
+                    method : "GET",
+                    withCredentials : true,
+                    headers:{
+                        'authorization' : JSON.parse(userDetails).token
+                    },
+                    url : "https://notesxd.herokuapp.com/notes/getfolder",
+                })
+                 console.log(logs.data, "123456")
+                 
+                 let data:[] = logs.data as []
+        
+                setFolders(data.reverse())
+              }
+              getFolders()
+     },[]) 
+            console.log(folders, "wertyu")
+
     const classes = useStyles();
-    const username ="Chiemere"
+    // const username ={Det.firstName}
     const trashCount ='4'
     const collaboratorCount ='8'
     return (
         <>
         <div className={classes.sidebarWrapper}>
             <div className={classes.profile}>
-               <Avatar alt="Remy Sharp" src="https://image.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg" sx={{width:'35px', height:'35px'}} style={{marginRight:'10px'}}/>
-                  <p className={classes.username}><strong>{username}</strong></p>
+               <Avatar alt="Remy Sharp" src={Det.avatar} sx={{width:'35px', height:'35px'}} style={{marginRight:'10px'}}/>
+                  <p className={classes.username}><strong>{Det.firstName}</strong></p>
                 <ExpandMoreIcon onClick={()=> setMenu(!menu)} style={{cursor:'pointer'}} sx={{width:"30px",height:'30px' }}/>
             </div>
             <div className={ menu ? classes.menu : classes.hide_menu_text}>
                    <div className={classes.menu_text}>
+                      <a href="/profile">
                        <div className={classes.menuicon}>
                           <AccountCircleIcon />
                           <h2 className={classes.text}>Profile</h2>
                        </div>
+                      </a>
+                      <a href="/changepassword">
                        <div className={classes.menuicon}>
                           <SettingsIcon />
                           <h2 className={classes.text}>Password</h2>
                        </div>
+                       </a>
+                       <a href="/logout">
                        <div className={classes.menuicon}>
                           <LogoutIcon />
                           <h2 className={classes.text}>Log Out</h2>
                        </div>
+                       </a>
                    </div>
             </div>
-            {navtitle.map((el,index)=>(
-            <div>
-                <div className={classes.notes} key={index}>
+            {folders.map((el:{title:string},index)=>(
+            <div key={index}>
+                <div className={classes.notes} >
                 <PlayArrowIcon className={classes.play} sx={{width:"15px",height:'15px'}}  style={{cursor:'pointer'}}  onClick={()=> setSubmenu(!submenu)} />
-                <div className={classes.menu_items}>{el.name}</div>
+                <div className={classes.menu_items}>{el.title}</div>
              </div>
-             <div className={ submenu ? classes.menu_items : classes.hide_menu_text}>{el.name}</div>
+             <div className={ submenu ? classes.menu_items : classes.hide_menu_text}>{el.title}</div>
              </div>
             ))}
             <div className={classes.note}>
-                <p className={classes.menu_item}>Trash ({trashCount})</p>
-            </div>
+                <p className={classes.menu_item}>Collaborators ({collaboratorCount})</p>  
+            </div>  
             <div className={classes.note}>
-            <p className={classes.menu_item}>Collaborators ({collaboratorCount})</p>  
-            </div>          
+                <p className={classes.menu_item}>Trash ({trashCount})</p>
+            </div>        
             <div className={classes.addNew}>
                <AddIcon />
               <h3 className={classes.newFolder}> NEW FOLDER </h3>
