@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@mui/styles';
 import Sidebar from './Sidebar';
-import Tabs from './Tabs'
+import Tabs from "./Tabs"
 import Scroll from './Scroll'
 
 const useStyles = makeStyles({

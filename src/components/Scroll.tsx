@@ -1,11 +1,13 @@
 import React from 'react'
 import { makeStyles } from '@mui/styles';
 import { borderLeft } from '@mui/system';
+import UpperScroll from "./UpperScroll"
 
 const useStyles = makeStyles({
     scrollWrapper:{
         flex:'55%',
-        borderLeft:'1px solid black'
+        borderLeft:'1px solid black',
+        flexDirection:"column"
     }
 });
 
@@ -14,7 +16,7 @@ const Scroll = () => {
     return (
         <>
         <div className={classes.scrollWrapper}>
-           MAIN CONTENTS TO BE HERE
+          <UpperScroll />
         </div>
         </>
     )

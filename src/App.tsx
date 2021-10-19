@@ -9,6 +9,8 @@ import Profile  from './components/Profile';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import LoginRedirect from './components/RedirectLogin';
 import ChangePasswordForm from './components/ChangePassword';
+import Logout from './components/Logout';
+
 
 function App() {
   return (
@@ -38,6 +40,9 @@ function App() {
           </Route>
           <Route path='/changepassword'>
             <ChangePasswordForm />
+          </Route>
+          <Route path='/logout'>
+            <Logout />
           </Route>
         </Switch>
       </Router>
