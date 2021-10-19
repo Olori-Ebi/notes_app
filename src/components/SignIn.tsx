@@ -15,6 +15,7 @@ import {
 import FacebookRoundedIcon from "@mui/icons-material/FacebookRounded";
 import GoogleIcon from "@mui/icons-material/Google";
 import axios from "axios";
+import {useCookies} from 'react-cookie'
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useHistory } from "react-router-dom";
 import "@fontsource/poppins";
@@ -71,6 +72,7 @@ const SignInForm = () => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [warningMessage, setWarningMsg] = useState("");
+  const [Id, setId] = useCookies(['UserD'])
   const history = useHistory();
 
   function checkLoginDetails() {
@@ -99,11 +101,15 @@ const SignInForm = () => {
           withCredentials: true,
           url: "https://notesxd.herokuapp.com/users/login",
         });
-        console.log(result.data);
+        
+        let tc = result.data as unknown as {token :string}
+        setId('UserD', tc.token,{
+          maxAge:1800
+        })
         window.localStorage.setItem("user", JSON.stringify(result.data));
-        history.push("/homepage");
+        history.push("/home");
       } catch (err: any) {
-        let errorMsg = err.response.data.error;
+        let errorMsg = err.response.data.error || err.response.data.message ;
         setWarningMsg(errorMsg);
       }
     }

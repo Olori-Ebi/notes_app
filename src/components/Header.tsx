@@ -14,7 +14,9 @@ const useStyles = makeStyles({
      display:'flex',
      justifyContent:'space-between',
      alignItems:'center',
-     height:'62px'
+     height:'62px',
+     position:'sticky',
+     top:'0',
     },
     logo:{
        marginLeft:'55px',
