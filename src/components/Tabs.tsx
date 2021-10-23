@@ -14,14 +14,23 @@ const useStyles = makeStyles({
         flex:'30%'
     },
 });
+
+interface NotesDetailsEx {
+    date: string
+    title : string
+    body : string
+    tags:string[]
+  }
 interface NotesDetails {
+    _id:string
+    id:string
     updatedAt: string
     title : string
     body : string
     tags:string[]
 }
 const Tabs = () => {
-    const { noteLists, handleSetNoteLists } = useContext(Context);
+    const { noteLists, handleSetNoteLists, handleOnEdit, active } = useContext(Context);
     const classes = useStyles();
     const [select, setSelect] = useState("")
     
@@ -47,13 +56,52 @@ let notes = [
 ]
 
 useEffect(() => {
- handleSetNoteLists!(notes)
+ handleSetNoteLists!([])
  
 }, [])
+
+
+
+const createNote = async() =>{
+
+    let bodyDetails = {body:' ', tags:[] , title : 'Untitled'}
+    let result:any = null
+    let userDetails = window.localStorage.getItem('user')!
+    console.log("select 1",select)  
+    console.log(JSON.parse(userDetails).token)
+    try{
+      result = await axios({
+        method : "POST",
+        data: bodyDetails,
+        headers:{
+            'authorization' : JSON.parse(userDetails).token
+        },
+        withCredentials : true,
+        url : `https://notesxd.herokuapp.com/notes/createNote/${active}`,
+    }) 
+    console.log(result.data.noteCreated)
+    let val = result.data.noteCreated
+    let  months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    let fg:string = val.updatedAt
+    let res ={
+                id:val._id,
+                date:  `${months[parseInt(fg.split('-')[1]) -1].substring(0,3).toUpperCase()} ${fg.split('-')[2].substring(0,2)}`,
+              title : val.title,
+              body : val.body,
+              tags: val.tags
+    }
+    handleOnEdit!(val._id)
+    let newList = [res,...noteLists!]
+    handleSetNoteLists!(newList)
+    }catch(err:any){
+      result = err.message
+    }
+}
+
+
 let  months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-  let gh = `https://notesxd.herokuapp.com/notes/desc?sort=${select}`
-  console.log('gh 1', gh)
 
 const fetchNotes = async() =>{
     let result:any = null
@@ -72,7 +120,8 @@ const fetchNotes = async() =>{
         let ret = result.data.map((val:NotesDetails)=>{
         let fg:string = val.updatedAt
         return {
-            date:  `${months[parseInt(fg.split('-')[1])].substring(0,3).toUpperCase()} ${fg.split('-')[2].substring(0,2)}`,
+            id:val._id,
+            date:  `${months[parseInt(fg.split('-')[1]) -1].substring(0,3).toUpperCase()} ${fg.split('-')[2].substring(0,2)}`,
             title : val.title,
             body : val.body,
             tags: val.tags
@@ -95,18 +144,18 @@ const fetchNotes = async() =>{
                         console.log(select)
                         fetchNotes()
                         }}>
-                        <option value="ascending" style={{backgroundColor:'white'}}>Last Updated</option>
-                        <option value="descending">First Updated</option>
+                        <option value="descending" style={{backgroundColor:'white'}}>Last Updated</option>
+                        <option value="ascending">First Updated</option>
                     </select>
                     
                 </div>
                 <div className="button">
-                    <button className="notebtn" ><i className="fas fa-plus"></i>NEW NOTE</button> 
+                    { active ? (<button className="notebtn" onClick={()=>createNote()}><i className="fas fa-plus"></i>NEW NOTE</button> ) : (<div></div>)}
                 </div>
             </div>
             <div style={{overflow:'scroll', height:'97vh', overflowX: 'scroll'}}>
                 {noteLists!.map((val)=>{
-                    return (<EachNote date={val.date} title={val.title} body={val.body} tags={val.tags} />)
+                    return (<EachNote date={val.date} id={val.id} title={val.title} body={val.body} tags={val.tags} />)
                 })}
             
              </div>

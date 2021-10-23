@@ -6,10 +6,12 @@ import SignUpForm from './components/Signup'
 import SignInForm from './components/SignIn';
 import EmailInput from './components/EmailInput';
 import NewPassword  from './components/NewPassword';
+import NotesPage from './components/ViewNote';
 import Profile  from './components/Profile';
 import { BrowserRouter as Router, Switch, Route, Redirect, useHistory } from "react-router-dom";
 import LoginRedirect from './components/RedirectLogin';
 import ChangePasswordForm from './components/ChangePassword';
+import CollaboratorSignUpForm from './components/CollaboratorSignup';
 
 function App() {
   const history = useHistory()
@@ -24,11 +26,18 @@ const  pus = ()=>{
     <div className="App">
       <Router>
         <Switch>
+          <Route path='/viewnotes/:id'>
+            <NotesPage />
+          </Route>
           <Route path='/login'  exact>
             {token ?  <Redirect to="/home" /> :  <SignInForm />}
           </Route>
           <Route path='/signup' exact>
             {token ?  <Redirect to="/home" /> :  <SignUpForm />}
+          </Route>
+          <Route path='/collaboratorsignup/:token' >
+          <CollaboratorSignUpForm />
+            {/* {token ? <Redirect to="/home" />  : <CollaboratorSignUpForm />} */}
           </Route>
           <Route path='/home' exact>
             {token ? <Homepage /> : <Redirect to="/login" />}

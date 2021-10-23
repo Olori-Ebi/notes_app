@@ -103,14 +103,20 @@ const SignInForm = () => {
         });
         
         let tc = result.data as unknown as {token :string}
+        window.localStorage.setItem("user", JSON.stringify(tc));
+        window.localStorage.setItem('tabHistory', JSON.stringify([]))
+        
         setId('UserD', tc.token,{
-          maxAge:1800
+          maxAge:186400
         })
-        window.localStorage.setItem("user", JSON.stringify(result.data));
+        
+        
         history.push("/home");
       } catch (err: any) {
-        let errorMsg = err.response.data.error || err.response.data.message ;
-        setWarningMsg(errorMsg);
+        console.log('problem')
+        console.log(result)
+        // let errorMsg = err.response.data.error || err.response.data.message ;
+        // setWarningMsg(errorMsg);
       }
     }
   }
