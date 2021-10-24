@@ -1,11 +1,10 @@
-import React,{useState, useRef, SyntheticEvent} from 'react'
+import React,{useState, useRef, SyntheticEvent, useEffect} from 'react'
 import { makeStyles } from '@mui/styles';
 import Sidebar from './Sidebar';
 import Tabs from './Tabs'
 import Scroll from './Scroll'
 import axios from "axios"
-
-
+import CloseIcon from '@mui/icons-material/Close';
 const useStyles = makeStyles({
     mainWrapper:{
         display:'flex'
@@ -16,39 +15,48 @@ const useStyles = makeStyles({
         top:0,
         bottom:0,
         right:0,
-        "background-color":'rgba(0,0,0,0.4)',
-        "z-index":100
+        height:"900px",
+        "background-color":'rgba(0,0,0,0.8)',
+        "z-index":100,
+        transition:'all 0.4s linear'
     },
     modalContentContainer:{
-        margin:"20rem auto",
-        width:"40%",
-        minHeight:"20rem",
+        margin:"10rem auto",
+        width:"30%",
+        height:"18rem",
         backgroundColor:"white",
         borderRadius:"1rem",
-        zIndex:101
+        zIndex:109,
+        transition:'all 0.4s linear'
     },
     modalContentHeader:{
         display: "flex",
         alignItems: "center",
         justifyContent:"space-between",
         padding:"0.5rem 1rem",
-        borderBottom:"2px solid rgba(5,5,5,0.8)",
-        marginBottom:"1rem"
+        marginBottom:"1rem",
+        backgroundColor:"#32A05F"  
     },
     modalCloseBtn:{
         cursor: "pointer",
-        
     },
     modalInput:{
-        width:"60%",
+        width:"90%",
         height: "2rem",
-        marginBottom:"1rem",
-        borderRadius:"0.5rem"
+        marginBottom:"2rem",
+        marginTop:'2rem',
+        borderRadius:"0.5rem",
     },
-
     submitButton:{
         height: "2.5rem",
-
+        backgroundColor:"#32A05F",
+        color:'#EAEAEA',
+        borderRadius:"30px",
+        border:'none',
+        outline: 'none',
+        fontSize: '18px',
+        cursor: 'pointer',
+        padding:'0.3rem'
     }
 });
 const Main = () => {
@@ -70,71 +78,81 @@ const Main = () => {
 }
 
 const Modal = (props :any)=>{
-    let reftype:any = {}
     const classes = useStyles();
-    const titleField = useRef(reftype);
+    const [titleField, setTitle] = useState("");
     const [errMsg, setErrorMsg] = useState("");
-    const [disabled, disableBtn]= useState(false)
+    const [falseMsg, setFalseMsg] = useState("");
+    const [disabled, disableBtn]= useState(true)
     const [displayModal, setDisplayModal] = useState(false);
-
+    useEffect( ()=>{
+        if(titleField){
+            disableBtn(false)
+        }else{
+            disableBtn(true)
+        }
+    }, [titleField])
+    const handleTitleField = (e : {target:{value:string}})=>{
+        setTitle(e.target.value)
+    }
     const handleSubmit = (e : SyntheticEvent)=>{
+        let userDetails = window.localStorage.getItem('user')!
         console.log("Button clicked")
         disableBtn(true)
         e.preventDefault();
-        if(!titleField.current!.value){
+        if(!titleField){
             setErrorMsg("Title Field cannot be empty!")
             disableBtn(false)
             return;
         }
         axios.request({
             url:"https://notesxd.herokuapp.com/notes/createFolder",
-            
             data:{
-                title:titleField.current!.value
+                title:titleField
             },
             headers:{
-                'authorization':"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTZjOTE5ODk5MGEwNmM2MzE3NzgxZWUiLCJpYXQiOjE2MzQ2MDEzOTV9.guh0VbkWefUWfC5irJBK3ofsz5n-F9yXDQi2YB0ZFek"
+                'authorization': JSON.parse(userDetails).token
             },
             method:"post"
         })
         .then((response)=>{
-            console.log(response)
+            console.log(response)   
             let f1:{message:string, folder:string} = response.data as {message:string, folder:string}
             const msg  =  f1.message; 
             const createdFolder = f1.folder;
-            alert(msg);
-            disableBtn(false)
+            disableBtn(true)
+            if(response.status.toString() === '200'){
+                setFalseMsg(msg)
+                return
+            }
+            // alert(msg);
+            console.log(response.status)
+            props.toggleModal(false)
+            window.location.reload()
         }).catch(err=>{
             console.log(err.response.error)
             setErrorMsg(err.response.error)
+            props.toggleModal(false)
             disableBtn(false)
         })
-
     }
-   
-
     return <div className={classes.modalContainer}  >
             <div className={classes.modalContentContainer}>
                 <div className={classes.modalContentHeader}>
-                    <h1 style={{display:"inline-block"}}>Create new folder</h1>
-                    <span className={classes.modalCloseBtn} onClick={e=> props.toggleModal(false)}>x</span>
+                    <h3 style={{display:"inline-block", color:'#EAEAEA', fontWeight: 'bold'}}>Create New Folder</h3>
+                    <span className={classes.modalCloseBtn} onClick={e=> props.toggleModal(false)}><CloseIcon style={{ color:'white'}}/></span>
                 </div>
                 <form onSubmit={handleSubmit}>
-                    <div>
+                <span style={{display:"inline-block", color:'#cc0000', }}>{falseMsg}</span>
+                    <div >
                     <label htmlFor="folderName">
-                        <input id="folderName" className={classes.modalInput} ref={titleField} required/>
+                        <input id="folderName"  className={classes.modalInput} onChange={handleTitleField} required/>
                     </label>
                     </div>
-                    <button className={classes.submitButton} disabled={disabled}>Create Folder</button>
+                    <button className={classes.submitButton} disabled={disabled} style={{color:"black"}} >Create Folder</button>
                 </form>
                 {errMsg && <p style={{color:"red"}}>{errMsg}</p>}
             </div>
             {displayModal && <Modal toggleModal={setDisplayModal}/> }
     </div>
-
 }
-
 export default Main;
-
-
-

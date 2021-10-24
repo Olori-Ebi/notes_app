@@ -5,7 +5,7 @@ import Sidebar from './Sidebar'
 
 const Homepage = () => {
     return (
-        <div className='homepage'>
+        <div className='homepage' style={{height:'100vh', overflow:'hidden'}}>
             <Header />
             <Main />
         </div>

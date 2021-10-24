@@ -67,7 +67,7 @@ const ProfileForm = () => {
   let userDetails = window.localStorage.getItem('user')!
   let Det:userdet = JSON.parse(userDetails).user
 console.log(Det, "werty")
-
+let ii:any= null
 
   const [firstName, setfirstname] = useState(Det.firstName);
   const [lastName, setlastname] = useState(Det.lastName);
@@ -75,7 +75,9 @@ console.log(Det, "werty")
   const [location, setlocation] = useState(Det.location)
   const [about, setabout] = useState(Det.about);
   const [warningMessage, setWarningMsg] = useState("")
+  const [stats, setstats] = useState("")
   const [genderselect, setGenderselect] = useState(Det.gender)
+  const [file, setFile] = useState(ii)
   const history = useHistory()
 
 const EditProfile = async (event: SyntheticEvent) => {
@@ -121,6 +123,59 @@ const EditProfile = async (event: SyntheticEvent) => {
       console.log(result, "sdfgh");
     }
   }
+  const fileChangedHandler = (event:any) => {
+    const imgFile = event.target.files[0]
+    setFile(event.target.files[0])
+    uploadHandler(event)
+  }
+  const uploadHandler = async(event:any) => {
+    console.log(file)
+    const formData = new FormData()
+    formData.append(
+      'avatar',
+      event.target.files[0],
+      event.target.files[0].name
+    )
+    const detail = {avatar:file}
+    let result = null
+    try{
+
+      result = await axios.put('https://notesxd.herokuapp.com/users/update', formData, {
+        onUploadProgress: progressEvent => {
+          console.log((progressEvent.loaded / progressEvent.total )*100 | 0)
+          setstats(((progressEvent.loaded / progressEvent.total )*100 | 0).toString() + '%')
+        },
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'authorization' : JSON.parse(userDetails).token
+        },
+        withCredentials : true,
+    })
+    let f1:any =result.data
+    // console.log(f1.data.)
+    setstats("")
+    let newDet = {...Det}
+    // newDet
+    const newDetails = {
+      token: JSON.parse(userDetails).token,
+      user:{
+        ...f1.data,
+      }
+    }
+    
+    window.localStorage.setItem('user', JSON.stringify(newDetails))
+    let bn = ''
+    setstats(bn)
+    history.push('/home')
+        
+    }catch(err:any){
+      result = err.message
+      // setWarningMsg(err.response.data.message);
+    } finally {
+      console.log(result, "sdfgh");
+    }
+  }
+
     const classes = useStyles();
      return (
       <div  className={classes.wrapper}>
@@ -133,8 +188,13 @@ const EditProfile = async (event: SyntheticEvent) => {
         <Box sx={{ marginTop: 7, display: 'flex', flexDirection: 'column', alignItems: 'center', padding:'20px'}} className={classes.boxForm}>
             {/* warning message to be refrenced from here */}
         <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}>{warningMessage}</h5>
-        <Avatar sx={{bgcolor: 'secondary.main',width: 80, height: 80}} alt="Remy Sharp" src="/static/images/avatar/1.jpg"></Avatar>
+        <Avatar sx={{bgcolor: 'secondary.main',width: 80, height: 80}} alt="Remy Sharp" src={Det.avatar}></Avatar>
       <Box component="form" onSubmit={EditProfile} noValidate sx={{ mt: 1 }}>
+          <div>{stats}</div>
+          <Button variant="contained" size="small" style={{position:'relative', maxWidth: '80px', fontSize:'12px', maxHeight: '20px', minWidth: '10px', minHeight: '15px'}} component="label"> Upload 
+            <input type="file" hidden onChange={fileChangedHandler}/>
+          </Button>
+          
           <TextField margin="normal" size="small" fullWidth id="first name" label="First Name" name="First Name" autoFocus defaultValue={Det.firstName} onChange={(e)=>setfirstname(e.target.value)}/>
           <TextField margin="normal" size="small" fullWidth id="last name" label="Last Name" name="Last Name" autoFocus defaultValue={Det.lastName} onChange={(e)=>setlastname(e.target.value)}/>
           <TextField margin="normal" size="small" fullWidth id="email" disabled label="Email Address" name="Email" autoComplete="email" autoFocus defaultValue={Det.email} onChange={(e)=>setemail(e.target.value)}/>

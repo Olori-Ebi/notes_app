@@ -1,45 +1,67 @@
 import React from 'react';
+import {useCookies} from 'react-cookie'
 import './App.css';
 import Homepage from './components/Homepage';
 import SignUpForm from './components/Signup'
 import SignInForm from './components/SignIn';
 import EmailInput from './components/EmailInput';
 import NewPassword  from './components/NewPassword';
+import NotesPage from './components/ViewNote';
 import Profile  from './components/Profile';
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect, useHistory } from "react-router-dom";
 import LoginRedirect from './components/RedirectLogin';
 import ChangePasswordForm from './components/ChangePassword';
+import CollaboratorSignUpForm from './components/CollaboratorSignup';
 import Logout from './components/Logout';
 
 
 function App() {
+  const history = useHistory()
+  const [Id, setId] = useCookies(['UserD', "sessMand"])
+   let token = Id.UserD
+      console.log({"App says" :token})
+  // {token ? <Home /> : <Redirect to="/login" />}
+const  pus = ()=>{
+  history.push('/')
+}
   return (
     <div className="App">
       <Router>
         <Switch>
-          <Route path='/'  exact>
-            <SignInForm />
+          <Route path='/viewnotes/:id'>
+            <NotesPage />
           </Route>
-          <Route path='/homepage'>
-            <Homepage />
+          <Route path='/login'  exact>
+            {token ?  <Redirect to="/home" /> :  <SignInForm />}
           </Route>
-          <Route path='/Signup'>
-            <SignUpForm />
+          <Route path='/signup' exact>
+            {token ?  <Redirect to="/home" /> :  <SignUpForm />}
           </Route>
+          <Route path='/collaboratorsignup/:token' >
+          <CollaboratorSignUpForm />
+            {/* {token ? <Redirect to="/home" />  : <CollaboratorSignUpForm />} */}
+          </Route>
+          <Route path='/home' exact>
+            {token ? <Homepage /> : <Redirect to="/login" />}
+          </Route>
+          
           <Route path='/redirect/:token'>
             <LoginRedirect />
           </Route>
           <Route path='/email'>
-            <EmailInput />
+            {token ?  <Redirect to="/login" /> :  <EmailInput />}
           </Route>
           <Route path='/password/:token'>
-            <NewPassword />
+            {token ?  <Redirect to="/login" /> :  <NewPassword />}
           </Route>
           <Route path='/profile'>
-            <Profile />
+            {token ? <Profile /> : <Redirect to="/login" />}
           </Route>
           <Route path='/changepassword'>
-            <ChangePasswordForm />
+          {token ? <ChangePasswordForm /> : <Redirect to="/login" />}
+          </Route>
+          <Route path='/' >
+            {token ? <Redirect to="/home" /> : <Redirect to="/login" />}
           </Route>
           <Route path='/logout'>
             <Logout />
