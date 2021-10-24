@@ -7,8 +7,7 @@ import UpperScroll from './Upperscroll'
 const useStyles = makeStyles({
     scrollWrapper:{
         flex:'55%',
-        borderLeft:'1px solid black',
-        flexDirection:"column"
+        borderLeft:'1px solid black'
     }
 });
 

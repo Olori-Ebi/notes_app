@@ -21,6 +21,56 @@ function Copyright(props: any) {
 }
 
 const useStyles = makeStyles({
+  //   bodys:{
+  //     backgroundColor:"whitesmoke",
+  //     width:"100%",
+  //     height:"85vh",
+  //     position:'relative',
+  //   },
+  //   emailText:{
+  //     display: "flex",
+  //     width: "400px",
+  //     color:"white",
+  //     borderRadius:"10px",
+  //   },
+  //   boxWrapper:{
+  //     position:"absolute",
+  //     width:'35%',
+  //     height:'80vh',
+  //     top:"10%",
+  //     left:"32%",
+  //     boxShadow:"0 3px 5px 2px rgba(0, 0, 0, .2)",
+  //     borderRadius:"10px"
+  //  },
+  //   boxs:{ 
+  //     marginTop:"9.5%",
+  //     marginLeft:"10%",
+  //     fontFamily:"poppins"
+  //  },
+  //   email:{
+  //     display: "flex",
+  //     width: "400px",
+  //     color:"white",
+  //     borderRadius:"10px",   
+  //   },
+  //   btn:{
+  //     width: "400px",
+  //   },
+  //   headerWrapper:{
+  //     background:'#65c368',
+  //     height:'10vh',
+  //     padding:'30px 0 10px 25px'
+  //   },
+  //   headerText:{
+  //       color:'white',
+  //       fontFamily:'poppins',
+  //       letterSpacing:'1px'
+  //   },
+  //   icon:{
+  //     position:'absolute',
+  //     left:'35%',
+  //     marginBottom:'20px',
+  // },
   headerWrapper:{
     background: '#65c368',
     height: '15vh',
@@ -102,8 +152,7 @@ const EditProfile = async (event: SyntheticEvent) => {
         withCredentials : true,
         url : "https://notesxd.herokuapp.com/users/update",
     })
-    console.log(result, "one")
-    console.log(detail, "two")
+    console.log(result)
         setWarningMsg("Profile updated successfully");
         const newDetails = {
           token: JSON.parse(userDetails).token,

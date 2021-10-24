@@ -12,8 +12,6 @@ import { BrowserRouter as Router, Switch, Route, Redirect, useHistory } from "re
 import LoginRedirect from './components/RedirectLogin';
 import ChangePasswordForm from './components/ChangePassword';
 import CollaboratorSignUpForm from './components/CollaboratorSignup';
-import Logout from './components/Logout';
-
 
 function App() {
   const history = useHistory()
@@ -62,9 +60,6 @@ const  pus = ()=>{
           </Route>
           <Route path='/' >
             {token ? <Redirect to="/home" /> : <Redirect to="/login" />}
-          </Route>
-          <Route path='/logout'>
-            <Logout />
           </Route>
         </Switch>
       </Router>
