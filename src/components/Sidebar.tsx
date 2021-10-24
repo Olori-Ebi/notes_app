@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext, FC } from 'react'
+import { Context } from "../UserContext";
 import axios from 'axios'
+import {useCookies} from 'react-cookie'
 import { makeStyles } from '@mui/styles';
 import '@fontsource/poppins';
 import '@fontsource/source-sans-pro'
@@ -10,7 +12,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import AddIcon from '@mui/icons-material/Add';
-
 const useStyles = makeStyles({
     sidebarWrapper:{
         flex:'15%',
@@ -53,10 +54,11 @@ const useStyles = makeStyles({
        fontSize:'14px',
        fontFamily:'poppins',
         marginLeft:'5px',
-       letterSpacing:'1px'
+       letterSpacing:'1px',
+       color:'green'
     },
     notes:{
-      backgroundColor:'#EAEAEA',
+    //   backgroundColor:'#EAEAEA',
       display:'flex',
       alignItems:'center',
        padding:'15px 0px',
@@ -79,7 +81,8 @@ const useStyles = makeStyles({
     menu_item:{
       fontSize:'16px',
       fontFamily:'source-sans-pro',
-      textTransform:'uppercase'
+      textTransform:'uppercase',
+      color:'white'
       },
     play:{
         marginLeft:'15px'
@@ -95,9 +98,18 @@ const useStyles = makeStyles({
     newFolder:{
         fontSize:'14px',
         fontFamily:'source-sans-pro',
-        marginLeft:'4px'
+        marginLeft:'4px',
+        fontWeight: 'lighter',
+        color:'white'
     }, 
 });
+interface NotesDetails {
+    _id:string
+    updatedAt: string
+    title : string
+    body : string
+    tags:string[]
+}
 const Textstyles ={fontSize:'20px', cursor:'pointer', fontFamily:'poppins', letterSpacing:'1px'}
 const navtitle=[
     {name:'NOTES'},
@@ -105,182 +117,228 @@ const navtitle=[
     {name:'FOLDER 1'},
     {name:'FOLDER 2'}
 ]
-const Sidebar = () => {
+interface userdet {
+    firstName : string
+    lastName: string
+    email: string
+    about : string
+    location : string
+    id: string
+    gender: string
+    avatar : string
+  }
+const Sidebar: FC<{toggleModal: Function}> = (props) => {
+    let userDetails = window.localStorage.getItem('user')!
+    let Det:userdet = JSON.parse(userDetails).user
     const [menu, setMenu ] = useState(false)
     const [submenu, setSubmenu ] = useState(false)
     const [ folders, setFolders ] = useState([])
-    useEffect(()=>{
-      const getFolders = async()=>{
-         const logs  = await (axios.get('https://notesxd.herokuapp.com/notes/getfolder'))
-         let data:[] = logs.data as []
-        setFolders(data)
+    const { noteLists, handleSetNoteLists, active, setActive } = useContext(Context);
+    const [cookies, setCookie, removeCookie] = useCookies(["UserD"]);
+
+
+console.log('active', active)
+    async function setNotes (id:string){
+        let result:any = null
+    let userDetails = window.localStorage.getItem('user')!
+    let  months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    // console.log("select 1",select)  
+    console.log(JSON.parse(userDetails).token)
+    try{
+      result = await axios({
+        method : "GET",
+        headers:{
+            'authorization' : JSON.parse(userDetails).token
+        },
+        withCredentials : true,
+        url : `https://notesxd.herokuapp.com/notes/getAllNote/${id}`,
+    }) 
+    console.log(result.data)
+    let ret = result.data.map((val:NotesDetails)=>{
+        let fg:string = val.updatedAt
+        return {
+            id:val._id,
+            date:  `${months[parseInt(fg.split('-')[1]) -1].substring(0,3).toUpperCase()} ${fg.split('-')[2].substring(0,2)}`,
+            title : val.title,
+            body : val.body,
+            tags: val.tags
+        }
+    })  
+    handleSetNoteLists!(ret)
+
+    }catch(err:any){
+      result = err.message
+    }
+}
+async function getTrash(){
+
+    let result:any = null
+    let userDetails = window.localStorage.getItem('user')!
+    let  months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    try{
+        result = await axios({
+          method : "GET",
+          headers:{
+              'authorization' : JSON.parse(userDetails).token
+          },
+          withCredentials : true,
+          url : `https://notesxd.herokuapp.com/notes/gettrash`,
+      }) 
+      console.log(result.data)
+      let ret = result.data.map((val:NotesDetails)=>{
+          let fg:string = val.updatedAt
+          return {
+              id:val._id,
+              date:  `${months[parseInt(fg.split('-')[1]) -1].substring(0,3).toUpperCase()} ${fg.split('-')[2].substring(0,2)}`,
+              title : val.title,
+              body : val.body,
+              tags: val.tags
+          }
+      })  
+      handleSetNoteLists!(ret)
+  
+      }catch(err:any){
+        result = err.message
       }
-      getFolders()
-    },[]) 
+}
+async function getCollaboratedNotes(){
+
+    let result:any = null
+    let userDetails = window.localStorage.getItem('user')!
+    let  months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    try{
+        result = await axios({
+          method : "GET",
+          headers:{
+              'authorization' : JSON.parse(userDetails).token
+          },
+          withCredentials : true,
+          url : `https://notesxd.herokuapp.com/notes/collaborators/notes`,
+      }) 
+      console.log(result.data)
+      console.log('jhds')
+      let ret = result.data.notes.map((val:NotesDetails)=>{
+          // let fg:string = val.updatedAt
+          return {
+              id:val._id,
+              // date:  `${months[parseInt(fg.split('-')[1]) - 1].substring(0,3).toUpperCase()} ${fg.split('-')[2].substring(0,2)}`,
+              title : val.title,
+              body : val.body,
+              tags: val.tags
+          }
+      })  
+      console.log('jhds')
+      handleSetNoteLists!(ret)
+  console.log(noteLists! + 'notes')
+      }catch(err:any){
+        result = err.message
+        console.log('error' , err)
+      }
+}
+
+    useEffect(()=>{
+              const getFolders = async()=>{
+                // let newId:{token?:string,id?:string} = {...Id}
+                // let tokens = newId.token
+                 let logs = await axios({
+                    method : "GET",
+                    withCredentials : true,
+                    headers:{
+                        'authorization' : JSON.parse(userDetails).token
+                    },
+                    url : "https://notesxd.herokuapp.com/notes/getfolder",
+                })
+                 console.log(logs.data, "123456")
+                 let data:[] = logs.data as []
+                setFolders(data.reverse())
+              }
+              getFolders()
+     },[]) 
+            console.log(folders, "wertyu")
     const classes = useStyles();
-    const username ="Chiemere"
+    // const username ={Det.firstName}
     const trashCount ='4'
     const collaboratorCount ='8'
     return (
         <>
         <div className={classes.sidebarWrapper}>
             <div className={classes.profile}>
-               <Avatar alt="Remy Sharp" src="https://image.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg" sx={{width:'35px', height:'35px'}} style={{marginRight:'10px'}}/>
-                  <p className={classes.username}><strong>{username}</strong></p>
+               <Avatar alt="Remy Sharp" src={Det.avatar} sx={{width:'35px', height:'35px'}} style={{marginRight:'10px'}}/>
+                  <p className={classes.username}><strong>{Det.firstName}</strong></p>
                 <ExpandMoreIcon onClick={()=> setMenu(!menu)} style={{cursor:'pointer'}} sx={{width:"30px",height:'30px' }}/>
             </div>
             <div className={ menu ? classes.menu : classes.hide_menu_text}>
                    <div className={classes.menu_text}>
-                       <div className={classes.menuicon}>
-                          <AccountCircleIcon />
+                      <a href="/profile">
+                       <div className={classes.menuicon} >
+                          <AccountCircleIcon style={{color:'black'}}/>
                           <h2 className={classes.text}>Profile</h2>
                        </div>
+                      </a>
+                      <a href="/changepassword">
                        <div className={classes.menuicon}>
-                          <SettingsIcon />
+                          <SettingsIcon style={{color:'black'}}/>
                           <h2 className={classes.text}>Password</h2>
                        </div>
-                       <div className={classes.menuicon}>
-                          <LogoutIcon />
+                       </a>
+                       <a href="/logout">
+                       <div className={classes.menuicon} onClick={()=>{
+                           window.localStorage.removeItem('user')
+                           removeCookie('UserD')
+                           
+                           }}>
+                          <LogoutIcon style={{color:'black'}}/>
                           <h2 className={classes.text}>Log Out</h2>
                        </div>
+                       </a>
                    </div>
             </div>
-            {navtitle.map((el,index)=>(
-            <div>
-                <div className={classes.notes} key={index}>
-                <PlayArrowIcon className={classes.play} sx={{width:"15px",height:'15px'}}  style={{cursor:'pointer'}}  onClick={()=> setSubmenu(!submenu)} />
-                <div className={classes.menu_items}>{el.name}</div>
+            <div style={{ height:'60vh', overflow:'scroll'}}>
+              {folders.map((el:{_id:string, title:string},index)=>
+              {
+                  // let cl = 
+                  return(
+              <div key={index}>
+                  <div className={classes.notes} style={(active === el._id) ? {backgroundColor:'#EAEAEA',cursor:'pointer' } : {cursor:'pointer'}} onClick={()=> {
+                      setSubmenu(sub=>!sub)
+                      setNotes(el._id)
+                      setActive!(el._id)
+                      }} >
+                  <PlayArrowIcon className={classes.play}  sx={{width:"15px",height:'15px'}}style={(active === el._id) ? {cursor:'pointer', color:'#020202' } : {cursor:'pointer', color:'#4a4949'}}     />
+                  <div className={classes.menu_items} style={(active === el._id) ? {fontFamily:'poppins', color:'#020202' } : {fontFamily:'poppins', color:'#4a4949'}} >{el.title.toUpperCase()}</div>
+              </div>
+              {/* <div className={ submenu ? classes.menu_items : classes.hide_menu_text}>{el.title}</div> */}
+              </div>
+              )}
+              )}
+               </div>
+              <div >
+                  <div className={classes.notes} onClick={()=> {getTrash()}} >
+                  {/* <PlayArrowIcon className={classes.play} sx={{width:"15px",height:'15px'}}  style={{cursor:'pointer'}}   /> */}
+                  <div className={classes.menu_items} style={{color:'#4a4949', fontFamily:'poppins', paddingLeft:'30px'}}>TRASH</div>
+              </div>
+              {/* <div className={ submenu ? classes.menu_items : classes.hide_menu_text}>hkanbs dk</div> */}
+              </div>
+              <div >
+                <div className={classes.notes} onClick={()=> {getCollaboratedNotes()}} >
+                {/* <PlayArrowIcon className={classes.play} sx={{width:"15px",height:'15px'}}  style={{cursor:'pointer'}}   /> */}
+                <div className={classes.menu_items} style={{color:'#4a4949', fontFamily:'poppins', paddingLeft:'30px', }}>COLLABORATORS</div>
              </div>
-             <div className={ submenu ? classes.menu_items : classes.hide_menu_text}>{el.name}</div>
+             {/* <div className={ submenu ? classes.menu_items : classes.hide_menu_text}>hkanbs dk</div> */}
              </div>
-            ))}
-            <div className={classes.note}>
-                <p className={classes.menu_item}>Trash ({trashCount})</p>
-            </div>
-            <div className={classes.note}>
-            <p className={classes.menu_item}>Collaborators ({collaboratorCount})</p>  
-            </div>          
-            <div className={classes.addNew}>
-               <AddIcon />
-              <h3 className={classes.newFolder}> NEW FOLDER </h3>
+         
+
+
+               
+            <div className={classes.addNew} style= {{cursor:'pointer'}}>
+               <AddIcon style={{ color:'#4a4949'}}/>
+              <h3 className={classes.newFolder} style={{fontFamily:'poppins', color:'#4a4949'}} onClick={e=> props.toggleModal(true)}> NEW FOLDER </h3>
             </div>
         </div>
         </>
     )
 }
 export default Sidebar
-
-
-
-// import React, { useState, useEffect } from 'react'
-// import axios from 'axios'
-// import { makeStyles } from '@mui/styles';
-// import Avatar from '@mui/material/Avatar';
-// import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-// import {useCookies} from 'react-cookie'
-// import '@fontsource/poppins'
-
-// const useStyles = makeStyles({
-//     sidebarWrapper:{
-//         flex:'20%',
-//         height:'100vh',
-//         width:'100%',
-       
-//     },
-//     navItems:{
-       
-       
-//     },
-//     navProfile:{
-//        background:'whitesmoke',
-//        display:'flex',
-//        alignItems:'center',
-//        height:'7vh',
-//        width:'80%',
-//        marginTop:'20px',
-//        marginLeft:'10px',
-//        padding:'8px 0 8px 10px',
-//        borderRadius:'10px',
-//        transition: 'all 0.3s linear',
-//        '&:hover':{
-//            background:'#226220',
-//            color:'white'
-//        }
-//     },
-//     icon:{
-//         marginRight:'10px'
-//     },
-//     expandmore:{
-//         marginLeft:'10px',
-//         cursor:'pointer'
-//     },
-//        folders:{
-//        display:'flex',
-//        justifyContent:'center',
-//        alignItems:'center',
-//        height:'5vh',
-//        width:'80%',
-//        marginTop:'20px',
-//        marginLeft:'10px',
-//        padding:'8px 0 8px 2px',
-//        borderRadius:'10px',
-//        transition: 'all 0.3s linear',
-//        '&:hover':{
-//         background:'whitesmoke',
-//         color:'black'
-//     }
-//     }
-// });
-// const Textstyles ={fontSize:'20px', cursor:'pointer', fontFamily:'poppins', letterSpacing:'1px'}
-// const navtitle=[
-//     {name:'Trash'},
-//     {name:'Collaborators'}
-// ]
-// const Sidebar = () => {
-//     const [ folders, setFolders ] = useState([])
-//     const [Id, setId] = useCookies(['id'])
-//     useEffect(()=>{
-//       const getFolders = async()=>{
-//         let newId:{token?:string,id?:string} = {...Id}
-//         let tokens = newId.token
-//          let logs = await axios({
-//             method : "GET",
-//             withCredentials : true,
-//             headers:{
-//                 'x-access-token' : tokens!
-//             },
-//             url : "https://notesxd.herokuapp.com/notes/getfolder",
-//         })
-//          console.log(logs.data)
-         
-//          let data:[] = logs.data as []
-
-//         setFolders(data.reverse())
-//       }
-//       getFolders()
-//     },[]) 
-
-//     const classes = useStyles();
-//     const username ="Benedict"
-//     return (
-//         <>
-//         <div className={classes.sidebarWrapper}>
-//             <div className={classes.navItems}>
-//                 <div className={classes.navProfile}>
-//                    <Avatar alt="Remy Sharp" src="https://image.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg" className={classes.icon}/>
-//                    <h3 style={Textstyles}>{username}</h3>
-//                 </div>
-//                 {folders.map((el:{title:string},index)=>(
-//                     <div className={classes.folders} key={index}>
-//                   <h3 style={Textstyles} className={classes.folders}>{el.title}</h3>
-//                   <ExpandMoreIcon className={classes.expandmore}/>
-//                   </div>
-//                 ))}
-               
-//             </div>
-//         </div>
-//         </>
-//     )
-// }
-
-// export default Sidebar 
