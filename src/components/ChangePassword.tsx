@@ -122,7 +122,7 @@ const ChangePasswordForm = () => {
             </Button>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 4, mb: 2 }} />
+        <Copyright sx={{ mt: 20, mb: 2 }} />
       </Container>
     </ThemeProvider>
     </div>
