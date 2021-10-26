@@ -8,6 +8,7 @@ import EmailInput from './components/EmailInput';
 import NewPassword  from './components/NewPassword';
 import NotesPage from './components/ViewNote';
 import Profile  from './components/Profile';
+import MainPage  from './components/Mainpage';
 import { BrowserRouter as Router, Switch, Route, Redirect, useHistory } from "react-router-dom";
 import LoginRedirect from './components/RedirectLogin';
 import ChangePasswordForm from './components/ChangePassword';
@@ -28,6 +29,9 @@ const  pus = ()=>{
         <Switch>
           <Route path='/viewnotes/:id'>
             <NotesPage />
+          </Route>
+          <Route path='/'  exact>
+            <MainPage />
           </Route>
           <Route path='/login'  exact>
             {token ?  <Redirect to="/home" /> :  <SignInForm />}

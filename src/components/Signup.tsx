@@ -83,7 +83,7 @@ const SignUpForm = () => {
                 password,
                 confirm_password: repeatPassword,
             };
-              await axios.post(process.env.REACT_APP_signup_url as string, details)
+              await axios.post('https://notesxd.herokuapp.com/users/signup', details)
                 .then((response) => {
                     alert("success!")
                     console.log(response)

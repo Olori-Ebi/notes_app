@@ -14,6 +14,7 @@ interface NotesDetails {
 export default function EachNote(props:NotesDetails) {
 
     const { handleOnEdit, onEdit, handleTabMemory } = useContext(Context);
+    console.log(onEdit, 'edit')
     function setHistory(noteId:string,noteTitle:string) {
 
         let history =  window.localStorage.getItem('tabHistory')

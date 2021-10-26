@@ -129,6 +129,7 @@ handleTabMemory!(filteredHistory)
         value={value}
         onChange={handleChange}
         variant="scrollable"
+        indicatorColor="primary"
         scrollButtons={false}
         aria-label="scrollable prevent tabs example"
       >
@@ -142,19 +143,36 @@ handleTabMemory!(filteredHistory)
 
 
                   return (
-                  <div style={{ display:"flex", flexDirection:"row",}}>
-                  <Tab label={val.title}   onClick={()=> {handleOnEdit!(val.id)}}/>
-                  <CloseIcon style={{float:"right",color:"#707070", marginTop:"12px"}}  onClick={()=> {handleCloseTab(val.id)}}/>
-                  </div>)
+
+                    <Tab label={
+                        <div style={{display:'flex', alignItems:'center'}}>
+                        <div style={{marginRight:"9px", fontSize:'14px'}} >{val.title} </div>
+                        <CloseIcon style={{color:"#707070", alignItems:'center'}} onClick={()=> {handleCloseTab(val.id)}}/>
+                        </div>
+                    } onClick={()=> {handleOnEdit!(val.id)}}/>
+
+                //   <div style={{ display:"flex", flexDirection:"row",}}>
+                //   <Tab label={val.title}   onClick={()=> {handleOnEdit!(val.id)}}/>
+                //   <CloseIcon style={{float:"right",color:"#707070", marginTop:"12px"}}  onClick={()=> {handleCloseTab(val.id)}}/>
+                //   </div>
+                  )
                 })
           }
 
 
 
         {/* <div style={{ display:"flex", flexDirection:"row",}}>
-        <Tab label="Item One" />
+        <Tab label={
+            <div style={{display:'flex', alignItems:'center'}}>
+            <div style={{marginRight:"9px", fontSize:'14px'}} >{ 'item ONE' }</div>
+            <CloseIcon style={{color:"#707070", alignItems:'center'}} />
+            </div>
+        } /> */}
+        <Tab label="Item One"   sx={{color:'black', bgcolor:'pink'}}/>
+        {/* <Tab label="Item One" />
         <CloseIcon style={{float:"right",color:"#707070", marginTop:"12px"}} />
         </div> */}
+        
       </Tabs>  
     </Box> 
         <div style={{ display:"flex", marginLeft:"690px", flexDirection:"row", marginTop:"3rem"}}>
@@ -163,8 +181,8 @@ handleTabMemory!(filteredHistory)
         </div>
         </div>
         <div style={{ width:"inherit", height:"30%", overflow:"scroll", backgroundColor: 'white', display:"flex", flexDirection:"column", alignItems:"flex-start", paddingLeft:"40px" }}>
-                <div style={{width:"95%", marginBottom:'1rem'}}>
-                <TextField  key={general.updatedAt ? 'notLoadedYet' : 'loaded'} size="small" sx={{fontSize:'2.5rem'}} placeholder="Untitled" fullWidth  variant="standard" defaultValue={general.title} onChange={(e)=>setTitle(e.target.value)}/>
+                <div key={general.title} style={{width:"95%", marginBottom:'1rem'}}>
+                <TextField  key={general.updatedAt ? 'notLoadedYet' : 'loaded'} size="small" sx={{fontSize:'2.5rem'}} placeholder="Untitled" fullWidth  variant="standard"  defaultValue={general.title} onChange={(e)=>setTitle(e.target.value)}/>
                 </div>
                 <div style={{padding:"15px 0", display:"flex"}}>
                 <span style={{padding:"0 55px 0 0", color:'#707070', fontFamily:'poppins', fontSize:'12px'}}>Created by</span> 

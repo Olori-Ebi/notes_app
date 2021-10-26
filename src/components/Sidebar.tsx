@@ -186,7 +186,7 @@ async function getTrash(){
           withCredentials : true,
           url : `https://notesxd.herokuapp.com/notes/gettrash`,
       }) 
-      console.log(result.data)
+      console.log(result.data + 'l jklkjlm')
       let ret = result.data.map((val:NotesDetails)=>{
           let fg:string = val.updatedAt
           return {
@@ -221,10 +221,10 @@ async function getCollaboratedNotes(){
       console.log(result.data)
       console.log('jhds')
       let ret = result.data.notes.map((val:NotesDetails)=>{
-          // let fg:string = val.updatedAt
+          let fg:string = val.updatedAt
           return {
               id:val._id,
-              // date:  `${months[parseInt(fg.split('-')[1]) - 1].substring(0,3).toUpperCase()} ${fg.split('-')[2].substring(0,2)}`,
+              date:  `${months[parseInt(fg.split('-')[1]) - 1].substring(0,3).toUpperCase()} ${fg.split('-')[2].substring(0,2)}`,
               title : val.title,
               body : val.body,
               tags: val.tags
