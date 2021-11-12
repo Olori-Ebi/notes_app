@@ -64,7 +64,7 @@ async function userEmail(event: SyntheticEvent){
       };
       let apiRes = null
       try{
-        apiRes = await axios.post("https://notesxd.herokuapp.com/users/recovery-email", details)
+        apiRes = await axios.post("http://localhost:3005/users/recovery-email", details)
         // setAlertMsg("A Mail has been sent to you to verify your email")
         setWarningMsg("A Mail has been sent to you to verify your email")
       } catch (err:any) {

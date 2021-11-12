@@ -6,6 +6,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import "@fontsource/poppins"
 import axios from "axios";
 import { useHistory } from 'react-router-dom'
+import CloseIcon from '@mui/icons-material/Close';
 
 function Copyright(props: any) {
   return (
@@ -20,57 +21,7 @@ function Copyright(props: any) {
   );
 }
 
-const useStyles = makeStyles({
-  //   bodys:{
-  //     backgroundColor:"whitesmoke",
-  //     width:"100%",
-  //     height:"85vh",
-  //     position:'relative',
-  //   },
-  //   emailText:{
-  //     display: "flex",
-  //     width: "400px",
-  //     color:"white",
-  //     borderRadius:"10px",
-  //   },
-  //   boxWrapper:{
-  //     position:"absolute",
-  //     width:'35%',
-  //     height:'80vh',
-  //     top:"10%",
-  //     left:"32%",
-  //     boxShadow:"0 3px 5px 2px rgba(0, 0, 0, .2)",
-  //     borderRadius:"10px"
-  //  },
-  //   boxs:{ 
-  //     marginTop:"9.5%",
-  //     marginLeft:"10%",
-  //     fontFamily:"poppins"
-  //  },
-  //   email:{
-  //     display: "flex",
-  //     width: "400px",
-  //     color:"white",
-  //     borderRadius:"10px",   
-  //   },
-  //   btn:{
-  //     width: "400px",
-  //   },
-  //   headerWrapper:{
-  //     background:'#65c368',
-  //     height:'10vh',
-  //     padding:'30px 0 10px 25px'
-  //   },
-  //   headerText:{
-  //       color:'white',
-  //       fontFamily:'poppins',
-  //       letterSpacing:'1px'
-  //   },
-  //   icon:{
-  //     position:'absolute',
-  //     left:'35%',
-  //     marginBottom:'20px',
-  // },
+const useStyles = makeStyles({ 
   headerWrapper:{
     background: '#65c368',
     height: '15vh',
@@ -149,8 +100,8 @@ const EditProfile = async (event: SyntheticEvent) => {
         headers:{
             'authorization' : JSON.parse(userDetails).token
         },
-        withCredentials : true,
-        url : "https://notesxd.herokuapp.com/users/update",
+        // withCredentials : true,
+        url : "http://localhost:3005/users/update",
     })
     console.log(result)
         setWarningMsg("Profile updated successfully");
@@ -189,7 +140,7 @@ const EditProfile = async (event: SyntheticEvent) => {
     let result = null
     try{
 
-      result = await axios.put('https://notesxd.herokuapp.com/users/update', formData, {
+      result = await axios.put('http://localhost:3005/users/update', formData, {
         onUploadProgress: progressEvent => {
           console.log((progressEvent.loaded / progressEvent.total )*100 | 0)
           setstats(((progressEvent.loaded / progressEvent.total )*100 | 0).toString() + '%')
@@ -198,7 +149,7 @@ const EditProfile = async (event: SyntheticEvent) => {
           'Content-Type': 'multipart/form-data',
           'authorization' : JSON.parse(userDetails).token
         },
-        withCredentials : true,
+        // withCredentials : true,
     })
     let f1:any =result.data
     // console.log(f1.data.)
@@ -224,6 +175,10 @@ const EditProfile = async (event: SyntheticEvent) => {
       console.log(result, "sdfgh");
     }
   }
+  const handleClose = () => {
+    setWarningMsg("");
+    history.push('/home')
+}
 
     const classes = useStyles();
      return (
@@ -235,8 +190,9 @@ const EditProfile = async (event: SyntheticEvent) => {
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box sx={{ marginTop: 7, display: 'flex', flexDirection: 'column', alignItems: 'center', padding:'20px'}} className={classes.boxForm}>
+        <CloseIcon style={{float:"right", marginLeft: "350px"}} onClick={handleClose}/>
             {/* warning message to be refrenced from here */}
-        <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}>{warningMessage}</h5>
+        <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}>{warningMessage}</h5> 
         <Avatar sx={{bgcolor: 'secondary.main',width: 80, height: 80}} alt="Remy Sharp" src={Det.avatar}></Avatar>
       <Box component="form" onSubmit={EditProfile} noValidate sx={{ mt: 1 }}>
           <div>{stats}</div>
@@ -256,7 +212,7 @@ const EditProfile = async (event: SyntheticEvent) => {
           </FormControl>
           <TextField margin="normal" size="small" fullWidth id="location" label="Location" name="location" autoComplete="location" autoFocus defaultValue={Det.location} onChange={(e)=>setlocation(e.target.value)}/>
           <TextField margin="normal" size="small" fullWidth id="about" label="About" name="about" autoComplete="about" autoFocus defaultValue={Det.about} onChange={(e)=>setabout(e.target.value)}/>
-          <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me"/>
+          {/* <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me"/> */}
           <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: '#32A05F' }} sx={{ mt: 3, mb: 2 }}>
           UPDATE
           </Button> 

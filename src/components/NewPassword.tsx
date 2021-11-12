@@ -76,7 +76,7 @@ const PasswordInput =() => {
       };
       let apiRes = null
       try{
-        apiRes = await axios.post("https://notesxd.herokuapp.com/users/reset", details)
+        apiRes = await axios.post("http://localhost:3005/users/reset", details)
         setWarningMsg("Password Changed Successfully")
         history.push('/')
       } catch (err:any) {

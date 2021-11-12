@@ -1,8 +1,23 @@
 import {useContext, useState , useEffect} from 'react'
+import Box from '@mui/material/Box';
+import SpeedDial from '@mui/material/SpeedDial';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
+import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
+import SaveIcon from '@mui/icons-material/Save';
+import PrintIcon from '@mui/icons-material/Print';
+import ShareIcon from '@mui/icons-material/Share';
 import { Context } from "../UserContext";
 import axios from "axios";
 import { Editor,  } from "react-draft-wysiwyg"
 import draftToHtml from "draftjs-to-html"
+import htmlToDraft from 'html-to-draftjs';
+// import SpeedDialIcon from '@mui/SpeedDialIcon';
+// import SpeedDial from '@mui/SpeedDial';
+// import * as React from 'react';
+
+
+
 import "./editor.css"
 import {
  EditorState,
@@ -13,10 +28,17 @@ import {
 } from "draft-js"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
 function TextEditor() {
+
   const {  onEdit } = useContext(Context);
+  const actions = [
+    { icon: <FileCopyIcon />, name: 'Copy' },
+    { icon: <SaveIcon />, name: 'Save' },
+    { icon: <PrintIcon />, name: 'Print' },
+    { icon: <ShareIcon />, name: 'Share' },
+  ];
   // const [bod, setBod] = useState('<p><span style="color: #e4e1e0;"><em>You can write your notes here</em></span></p>')
-  const blocksFromHTML = convertFromHTML('Type Your Note here');
-  const [bod, setBod] = useState('<p><span style="color: #e4e1e0;"><em>You can write your notes here</em></span></p>')
+  const blocksFromHTML = htmlToDraft('<p><span style="color: #8b8989;"><em>You can write your notes here</em></span></p>');
+  const [bod, setBod] = useState('<p><span style="color: #949291;"><em>You can write your notes here</em></span></p>')
  
   // let realbo
     const [editorState, setEditorState] = useState(EditorState.createWithContent(
@@ -36,15 +58,15 @@ const getNote = async(inp:string)=>{
       headers:{
           'authorization' : JSON.parse(userDetails).token
       },
-      withCredentials : true,
-      url : `https://notesxd.herokuapp.com/notes/${inp}`,
+      // withCredentials : true,
+      url : `http://localhost:3005/notes/${inp}`,
   }) 
 
        setEditorState(
       EditorState.createWithContent(
         ContentState.createFromBlockArray(
-          convertFromHTML(result.data.body).contentBlocks,
-          convertFromHTML(result.data.body).entityMap,
+          htmlToDraft(result.data.body).contentBlocks,
+          htmlToDraft(result.data.body).entityMap,
         )
       ),
      )
@@ -76,8 +98,8 @@ getNote(onEdit!)
             'authorization' : JSON.parse(userDetails).token
         },
         data: {body:markup},
-        withCredentials : true,
-        url : `https://notesxd.herokuapp.com/notes/editnote/${onEdit}`,
+        // withCredentials : true,
+        url : `http://localhost:3005/notes/editnote/${onEdit}`,
     }) 
     console.log(result)
     window.location.reload()
@@ -101,7 +123,23 @@ getNote(onEdit!)
       onEditorStateChange={onEditorStateChange}
       // onChange = {setBod}
       />
-  <button onClick={handleSubmit} >Submit</button>
+  <button onClick={handleSubmit} style={{color:"#32A05F", backgroundColor:"#15812c33",padding:"3px 5px", fontFamily:'poppins', fontSize:'12px', borderRadius:"7px" }}>Submit</button>
+  {/* <SpeedDial
+  ariaLabel="SpeedDial basic example"
+  ButtonProps={{ color: "secondary" }}
+  sx={{ position: 'absolute', bgcolor:'pink', width:300, bottom: 16, right: 16 }}
+  icon={<SpeedDialIcon sx={{  bgcolor:'pink', width:30,}}/>}
+  // size='large'
+> */}
+  {actions.map((action) => (
+    <SpeedDialAction
+      key={action.name}
+      icon={action.icon}
+      tooltipTitle={action.name}
+      sx={{  bgcolor:'pink', width:30,}}
+    />
+  ))}
+{/* </SpeedDial> */}
     </div>
   )
 }

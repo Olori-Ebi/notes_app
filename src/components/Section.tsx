@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import {useHistory} from 'react-router-dom'
 import axios from 'axios' 
 import { makeStyles } from '@mui/styles';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -39,7 +40,8 @@ const useStyles = makeStyles({
     section_texts:{
         fontFamily:'poppins',
         fontSize:'15px',
-        letterSpacing:'1px'
+        letterSpacing:'1px',
+        cursor: 'pointer'
     },
     section_info:{
         display:'flex',
@@ -50,6 +52,8 @@ const useStyles = makeStyles({
 
 
 interface  det {
+    // id?: string
+    _id?: string
     title?: string
     createdBy?: dat
     createdAt?: string
@@ -124,13 +128,15 @@ const details=[
     }
 ]
 const Section = () => {
-    let tr:{img?:string,name?:string,title?:string,date?:string,read?:string}[] = []
+    let tr:{id?:string, img?:string,name?:string,title?:string,date?:string,read?:string}[] = []
     const [trending, setTrending] = useState(tr)
+    const history = useHistory()
 
+    
     useEffect(()=>{
         let  months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-       let result =  axios.get('https://notesxd.herokuapp.com/notes/trendingNotes')
+       let result =  axios.get('http://localhost:3005/notes/trendingNotes')
        .then((res)=> {
            let resultData = res.data as det[]
 
@@ -138,6 +144,7 @@ const Section = () => {
            let newRees = resultData.map((val:det)=>{
             let fg:string = val.updatedAt!
             return {
+                id: val._id,
                 img: val.createdBy!.avatar,
                 name:`${val.createdBy!.firstName} ${val.createdBy!.lastName}`,
                 title:val.title,
@@ -145,8 +152,8 @@ const Section = () => {
             }
            }
        )
-       console.log(newRees + "utgukjbj")
-       setTrending(newRees)
+    //    console.log(newRees + "utgukjbj")
+       setTrending(newRees.slice(0,6))
         // console.log(res)
     })
        console.log(result)
@@ -169,7 +176,7 @@ const Section = () => {
                          <p>{el.name}</p>
                       </div>
                       <div className={classes.section_text}>
-                        <h3 className={classes.section_texts}>{el.title}</h3>
+                        <h3 className={classes.section_texts} onClick={()=>{history.push(`/notes/${el.id}`)}} >{el.title}</h3>
                       </div>
                       <div className={classes.section_info}>
                            <p style={{fontFamily:'poppins', fontSize:'13px', color:'black', border:'1px solid #32A05F', padding:'9px', borderRadius:'50px', cursor:'pointer'}}>{el.date}</p>

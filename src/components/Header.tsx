@@ -8,7 +8,22 @@ import Badge from '@mui/material/Badge';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import CloseIcon from '@mui/icons-material/Close';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import * as React from 'react';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from 'axios'
+// import React from 'react';
 const useStyles = makeStyles({
     headerWrapper:{
       // width: "100%",
@@ -34,6 +49,9 @@ const useStyles = makeStyles({
       color:'black'
     },
     headerSearch:{
+    },
+    read:{
+      backgroundColor:'#ebebeb'
     },
     search:{
       display:'flex',
@@ -101,15 +119,16 @@ const Header:React.FC = () => {
     let Det:userdet = JSON.parse(userDetails).user
   const [ notifications, setNotification ] = useState('0')
   const [ searchInput, setSearchInput ] = useState('')
+  const [ opened, setOpened ] = useState('')
+  const [ notificationArray, setNotificationArray ] = useState([])
   const { noteLists, handleSetNoteLists, active } = useContext(Context);
   const [ info, setInfo ] = useState([])
-
   useEffect(()=> {
     const userDetails = window.localStorage.getItem('user') as any
     const {user} = JSON.parse(userDetails as any) 
     const userId = user._id
     const {token} = JSON.parse(userDetails as any)//typings
-    axios.post('https://notesxd.herokuapp.com/notes/search', {sort:searchInput}, {
+    axios.post('http://localhost:3005/notes/search', {sort:searchInput}, {
       headers: {
         'Authorization': `${token}`
       }
@@ -125,7 +144,6 @@ const Header:React.FC = () => {
       console.log(res.data.message)
       setInfo(rees);
       let  months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
       let ret = info.map((val:NotesDetails)=>{
         let fg:string = val.updatedAt
         return {
@@ -137,24 +155,26 @@ const Header:React.FC = () => {
         }
     })  
     handleSetNoteLists!(ret)
-
     })
     .catch(e=>{
       console.log(e)
     })
   }, [searchInput])
 
-  console.log('info', info)
-  console.log('search-input',searchInput)
+  const openNotification = (id:string) =>{
+    axios.get(`http://localhost:3005/notes/getNot/${id}`,{
+      headers:{
+        'authorization' : JSON.parse(userDetails).token
+      }
+    }).then(res=> console.log(res))
+  }
   const searchItem = (searchValue: string) => {
     setSearchInput(searchValue)
     if (searchInput !== '') {
       const filteredData = info.filter((item:any) => {
         return Object.values(item).join('').toLowerCase().includes(searchInput.toLowerCase())
       })
-      // console.log('filtered-data',filteredData)
-      // console.log('search-input',searchInput)
-      // setFilteredResults(filteredData)
+
   }
   else{
       // setFilteredResults([])
@@ -168,11 +188,11 @@ const Header:React.FC = () => {
       // let tokens = newId.token
        let logs = await axios({
           method : "GET",
-          withCredentials : true,
+          // withCredentials : true,
           headers:{
               'authorization' : JSON.parse(userDetails).token
           },
-          url : "https://notesxd.herokuapp.com/notes/getNotification",
+          url : "http://localhost:3005/notes/getNotification",
       })
        console.log(logs.data, "12")
        let data
@@ -180,13 +200,34 @@ const Header:React.FC = () => {
            if(Array.isArray(logs.data)){
              data = logs.data.length as number
            }
-          setNotification(data.toString())
+          
+           let notificationArr:{ _id:string, content:string, opened:boolean}[] = logs.data as { _id:string, content:string, opened:boolean}[]
+          console.log(notificationArr)
+           let filteredLogs = (Array.isArray(notificationArr) ) ? notificationArr?.filter((val:{opened:boolean})=>val.opened === false ) : []
+          let filteredLogsNum = filteredLogs.length.toString()
+           setNotification(filteredLogsNum)
           console.log(notifications)
       //  setNotification(data.reverse())
     }
     getFolders()
 },[])
     const classes = useStyles();
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  //notifications 
+  const [ text, setText ] = useState(false);
+  const showText =()=>{
+    setText(true)
+  }
+  const hideText =()=>{
+    setText(false)
+  }
     return (
         <>
            <div className={classes.headerWrapper}>
@@ -202,13 +243,65 @@ const Header:React.FC = () => {
                    inputProps={{ 'poppins': 'search' }}
                    />
                </Search>
-               <Badge badgeContent={notifications} color="error">
+                 <Tooltip title="Notifications">
+          <IconButton onClick={handleClick} size="small" sx={{ ml: 2 }}>
+              <Badge badgeContent={notifications} color="error">
                     <NotificationsNoneIcon color="action" sx={{ fontSize:30}}/>
                  </Badge>
+          </IconButton>
+        </Tooltip>
+        <Menu anchorEl={anchorEl} open={open} onClose={handleClose}  PaperProps={{ elevation: 0,
+          sx: { overflow: 'visible', filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))', mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+
+
+        {
+          notificationArray.map((val:{ _id:string, content:string, opened:boolean})=>{
+            return (
+              <Accordion style={(val.opened)? {width:'20rem', backgroundColor:'#ebebeb'} : {width:'20rem'}}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography onClick={()=>{openNotification(val._id)}}>Notification A</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+           {val.content}
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+            )
+
+          })
+        }
+      </Menu>
             </div>
             </div>    
         </>
     )
 }
 export default Header
-

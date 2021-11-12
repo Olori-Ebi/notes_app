@@ -83,9 +83,10 @@ const SignUpForm = () => {
                 password,
                 confirm_password: repeatPassword,
             };
-              await axios.post('https://notesxd.herokuapp.com/users/signup', details)
+              await axios.post('http://localhost:3005/users/signup', details)
                 .then((response) => {
-                    alert("success!")
+                    // alert("success!")
+                    setWarningMsg("Sucessfully Signed Up! an email has been sent to you")
                     console.log(response)
                 }).catch(err => {
                     setWarningMsg(err.response.data.replace('\"',"").replace('\"',""));
@@ -103,12 +104,9 @@ const SignUpForm = () => {
                 <Container component="main" maxWidth="xs" style={{background:'whitesmoke'}}>
                     <CssBaseline />
                     <Box sx={{ marginTop: 5, display:'flex', flexDirection: 'column', alignItems: 'center', padding:'0px 20px 20px 20px'}} className={classes.boxForm}>
-                    {/* <h5 style={{ paddingTop:"2px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}>warning!</h5> */}
-                    {showWarning && <h5 style={{ paddingTop:"2px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}> {warningMessage} </h5>}
+                    {showWarning ? <h5 style={{ paddingTop:"2px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}> {warningMessage} </h5>
+                    : <h5 style={{ paddingTop:"2px", display:"flex", justifyContent:"center", color:"#32A05F", fontSize:'14px'}}> {warningMessage} </h5>}
                     <Box component="form" onSubmit={signUpUser} noValidate sx={{ mt: 1 }}>
-            {/* <div className={classes.bodys}>
-                <Box className={classes.boxWrapper}>
-                    <form className={classes.boxs} onSubmit={signUpUser}> */}
                         <TextField
                         margin="normal"
                         size="small"
@@ -178,13 +176,13 @@ const SignUpForm = () => {
                         </div>
                         {/* </div> */}
                         <div>
-                            <a href="https://notesxd.herokuapp.com/auth/facebook">
+                            <a href="http://localhost:3005/auth/facebook">
                             <FacebookRoundedIcon
                                 sx={{ width: "30px", height: "30px" }}
                                 style={{ color: "#32A05F" }}
                             />
                             </a>
-                            <a href="https://notesxd.herokuapp.com/auth/google/">
+                            <a href="http://localhost:3005/auth/google/">
                             <GoogleIcon
                                 sx={{ width: "30px", height: "30px" }}
                                 style={{ color: "#32A05F" }}

@@ -62,7 +62,7 @@ export default function SendMail() {
           };
         let apiRes = null
         try{
-          apiRes = await axios.put(`https://notesxd.herokuapp.com/notes/editnote/${id}`, details, 
+          apiRes = await axios.put(`http://localhost:3005/notes/editnote/${id}`, details, 
               { headers:{
                'authorization' : JSON.parse(userDetails).token
               }
@@ -84,11 +84,11 @@ export default function SendMail() {
       try{
        let logs = await axios({
           method : "GET",
-          withCredentials : true,
+          // withCredentials : true,
           headers:{
               'authorization' : JSON.parse(userDetails).token
           },
-          url : `https://notesxd.herokuapp.com/notes/${onEdit}`,
+          url : `http://localhost:3005/notes/${onEdit}`,
       })
       console.log(logs.data, "123456789")
        data = logs.data as det

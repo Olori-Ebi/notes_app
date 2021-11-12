@@ -76,8 +76,8 @@ const createNote = async() =>{
         headers:{
             'authorization' : JSON.parse(userDetails).token
         },
-        withCredentials : true,
-        url : `https://notesxd.herokuapp.com/notes/createNote/${active}`,
+        // withCredentials : true,
+        url : `http://localhost:3005/notes/createNote/${active}`,
     }) 
     console.log(result.data.noteCreated)
     let val = result.data.noteCreated
@@ -114,8 +114,8 @@ const fetchNotes = async() =>{
         headers:{
             'authorization' : JSON.parse(userDetails).token
         },
-        withCredentials : true,
-        url : `https://notesxd.herokuapp.com/notes/desc?sort=${select}`,
+        // withCredentials : true,
+        url : `http://localhost:3005/notes/desc?sort=${select}`,
     }) 
         let ret = result.data.map((val:NotesDetails)=>{
         let fg:string = val.updatedAt

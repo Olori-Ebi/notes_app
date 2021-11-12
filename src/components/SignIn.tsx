@@ -73,12 +73,15 @@ const SignInForm = () => {
   const [password, setpassword] = useState("");
   const [warningMessage, setWarningMsg] = useState("");
   const [Id, setId] = useCookies(['UserD'])
+  const [showWarning, setShowWarning] = useState(false);
   const history = useHistory();
 
   function checkLoginDetails() {
-    if (!email && !password) {
+    if (!email) {
       return false;
-    } else {
+    } else if (!password) {
+      return false;
+    } else{
       return true;
     }
   }
@@ -87,6 +90,7 @@ const SignInForm = () => {
     event.preventDefault();
     const checker = checkLoginDetails();
     if (!checker) {
+      setShowWarning(true)
       setWarningMsg("Email and Password is Required");
     } else {
       const details = {
@@ -95,31 +99,32 @@ const SignInForm = () => {
       };
       let result;
       try {
+        setShowWarning(false)
         result = await axios({
           method: "POST",
           data: details,
-          withCredentials: true,
-          url: "https://notesxd.herokuapp.com/users/login",
-        });
-        
+          // withCredentials: true,
+          url: "http://localhost:3005/users/login",
+        })
+        console.log(result , 'hgdw')
         let tc = result.data as unknown as {token :string}
         window.localStorage.setItem("user", JSON.stringify(tc));
         window.localStorage.setItem('tabHistory', JSON.stringify([]))
+        window.localStorage.setItem('activeFolder', '')
         
         setId('UserD', tc.token,{
           maxAge:186400
         })
         
-        
         history.push("/home");
       } catch (err: any) {
-        console.log('problem')
-        console.log(result)
-        // let errorMsg = err.response.data.error || err.response.data.message ;
-        // setWarningMsg(errorMsg);
+        console.log(result, 'he2gdw')
+        setShowWarning(true)  
+        console.log(err.response.data.error, "ererehgcrer")
+        setWarningMsg(err.response.data.error);
       }
     }
-  }
+ }
 
   const classes = useStyles();
   return (
@@ -140,8 +145,8 @@ const SignInForm = () => {
             }}
             className={classes.boxForm}
           >
-            {/* warning message to be refrenced from here */}
-            <h5 style={{ paddingTop: "10px", display: "flex", justifyContent: "center", color: "red", fontSize: "14px",}}>{warningMessage}</h5>
+            {showWarning ? <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}>{warningMessage}</h5>
+                    : <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"#32A05F", fontSize:'14px'}}>{warningMessage}</h5>}
             <form className={classes.boxs} onSubmit={signInUser}>
               <TextField margin="normal" size="small" fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus onChange={(e) => setemail(e.target.value)}/>
               <TextField margin="normal" size="small" fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" onChange={(e) => setpassword(e.target.value)}/>
@@ -157,13 +162,13 @@ const SignInForm = () => {
                 Sign in with Social Networks
               </div>
               <div>
-                <a href="https://notesxd.herokuapp.com/auth/facebook">
+                <a href="http://localhost:3005/auth/facebook">
                   <FacebookRoundedIcon
                     sx={{ width: "30px", height: "30px" }}
                     style={{ color: "#32A05F" }}
                   />
                 </a>
-                <a href="https://notesxd.herokuapp.com/auth/google/">
+                <a href="http://localhost:3005/auth/google/">
                   <GoogleIcon
                     sx={{ width: "30px", height: "30px" }}
                     style={{ color: "#32A05F" }}

@@ -151,8 +151,8 @@ console.log('active', active)
         headers:{
             'authorization' : JSON.parse(userDetails).token
         },
-        withCredentials : true,
-        url : `https://notesxd.herokuapp.com/notes/getAllNote/${id}`,
+        // withCredentials : true,
+        url : `http://localhost:3005/notes/getAllNote/${id}`,
     }) 
     console.log(result.data)
     let ret = result.data.map((val:NotesDetails)=>{
@@ -183,8 +183,8 @@ async function getTrash(){
           headers:{
               'authorization' : JSON.parse(userDetails).token
           },
-          withCredentials : true,
-          url : `https://notesxd.herokuapp.com/notes/gettrash`,
+          // withCredentials : true,
+          url : `http://localhost:3005/notes/gettrash`,
       }) 
       console.log(result.data + 'l jklkjlm')
       let ret = result.data.map((val:NotesDetails)=>{
@@ -215,8 +215,8 @@ async function getCollaboratedNotes(){
           headers:{
               'authorization' : JSON.parse(userDetails).token
           },
-          withCredentials : true,
-          url : `https://notesxd.herokuapp.com/notes/collaborators/notes`,
+          // withCredentials : true,
+          url : `http://localhost:3005/notes/collaborators/notes`,
       }) 
       console.log(result.data)
       console.log('jhds')
@@ -245,11 +245,11 @@ async function getCollaboratedNotes(){
                 // let tokens = newId.token
                  let logs = await axios({
                     method : "GET",
-                    withCredentials : true,
+                    // withCredentials : true,
                     headers:{
                         'authorization' : JSON.parse(userDetails).token
                     },
-                    url : "https://notesxd.herokuapp.com/notes/getfolder",
+                    url : "http://localhost:3005/notes/getfolder",
                 })
                  console.log(logs.data, "123456")
                  let data:[] = logs.data as []
@@ -306,6 +306,7 @@ async function getCollaboratedNotes(){
                       setSubmenu(sub=>!sub)
                       setNotes(el._id)
                       setActive!(el._id)
+                      window.localStorage.setItem('activeFolder', el._id)
                       }} >
                   <PlayArrowIcon className={classes.play}  sx={{width:"15px",height:'15px'}}style={(active === el._id) ? {cursor:'pointer', color:'#020202' } : {cursor:'pointer', color:'#4a4949'}}     />
                   <div className={classes.menu_items} style={(active === el._id) ? {fontFamily:'poppins', color:'#020202' } : {fontFamily:'poppins', color:'#4a4949'}} >{el.title.toUpperCase()}</div>

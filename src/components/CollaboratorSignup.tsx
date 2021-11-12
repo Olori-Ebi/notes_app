@@ -87,7 +87,7 @@ const CollaboratorSignUpForm = () => {
                 method: "POST",
                 data: details,
                 withCredentials: true,
-                url: `https://notesxd.herokuapp.com/notes/collab/${token}`,
+                url: `http://localhost:3005/notes/collab/${token}`,
               });
             history.push('/login')
             } catch (err:any) {

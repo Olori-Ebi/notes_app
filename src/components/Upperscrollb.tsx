@@ -60,11 +60,11 @@ let crtBy: dat
       try{
        let logs = await axios({
           method : "GET",
-          withCredentials : true,
+          // withCredentials : true,
           headers:{
               'authorization' : JSON.parse(userDetails).token
           },
-          url : `https://notesxd.herokuapp.com/notes/${id}`,
+          url : `http://localhost:3005/notes/${id}`,
       })
       console.log(logs.data, "123456789")
        data = logs.data as det

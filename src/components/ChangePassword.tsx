@@ -89,7 +89,7 @@ const ChangePasswordForm = () => {
           'authorization': JSON.parse(userDetails).token
         },
         withCredentials: true,
-        url: "https://notesxd.herokuapp.com/users/changePassword",
+        url: "http://localhost:3005/users/changePassword",
       })
       setWarningMsg("Password updated successfully");
       history.push('/homepage')

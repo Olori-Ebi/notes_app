@@ -7,6 +7,7 @@ import Modal from '@mui/material/Modal';
 import { TextField } from '@mui/material';
 import axios from 'axios'
 import { useHistory } from 'react-router-dom'
+import UpperScroll from './Upperscroll'
 const style = {
   position: 'absolute' as 'absolute',
   top: '50%',
@@ -19,14 +20,14 @@ const style = {
 export default function Modals(props:any) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
-  const { noteLists, handleOnEdit, tabMemory, handleTabMemory, active, onEdit} = useContext(Context);
- 
+  const { noteLists, handleOnEdit, tabMemory, handleTabMemory, active, onEdit, tags, handleTags} = useContext(Context);
   const handleClose = () => {
     setOpen(false) 
     setWarningMsg("");
 }
-  const [tags, setTags] = useState("");
+  const [tag, setTag] = useState("");
   const [warningMessage, setWarningMsg] = useState("")
+  const [showWarning, setShowWarning] = useState(false);
   const history = useHistory()
   async function userTags(event: SyntheticEvent){
     event.preventDefault();
@@ -34,37 +35,53 @@ export default function Modals(props:any) {
     let id = onEdit
     if(!tags){
         setWarningMsg("Please input your tag")
+        setShowWarning(true)
       }else{
           const details = {
             title:props.title,
-           tags:[...props.tagx,tags]
+           tags:[...props.tagx,tag]
           };
-          console.log(details, "wer456")
+          
         let apiRes = null
         console.log(details, "details")
         try{
-          apiRes = await axios.put(`https://notesxd.herokuapp.com/notes/editnote/${id}`, details, 
+          apiRes = await axios.put(`http://localhost:3005/notes/editnote/${id}`, details, 
               { headers:{
                'authorization' : JSON.parse(userDetails).token
               }
             })
+            const newTags: never[] = details.tags as never[]
+          handleTags!(newTags)
+            console.log(apiRes, "ssssssss")
+            setShowWarning(false)
           setWarningMsg("Tag added Successfully")
-        //   let allHistory = window.localStorage.getItem('tabHistory')
 
-        //   let parsedallHistory = JSON.parse(allHistory!)
+          let history =  window.localStorage.getItem('tabHistory')
+          let parsedHistory = JSON.parse(history!)
+          // parsedHistory.push({
+          //     id:noteId,
+          //     title:noteTitle,
+          // })
+          parsedHistory = parsedHistory.map((val:{id:string, title:string})=>{
+            if(val.id === id){
+              return {
+                id:id,
+                title:props.title
+              }
+            }
+            return val
+          })
+          parsedHistory[0] = {
+            id:id,
+            title:props.title
+          }
+          handleTabMemory!(parsedHistory)
+          window.localStorage.setItem('tabHistory', JSON.stringify(parsedHistory))
 
-        // let filteredHistory = parsedallHistory.map((val:{id:string, title:string})=> 
-        // {     
-        //     val.id !== tabId
-        // }
-        // )
-
-        // window.localStorage.setItem('tabHistory', JSON.stringify(filteredHistory))
-        // handleTabMemory!(filteredHistory)
-          // history.push("/home")
-          // handleClose()
+          handleClose()       
         } catch (err:any) {
           apiRes = err.response;
+          setShowWarning(true)
           setWarningMsg(err.response.data.message);
         } finally {
           console.log(apiRes);
@@ -82,9 +99,10 @@ export default function Modals(props:any) {
       >
         <Box sx={style}>
         <CloseIcon style={{float:"right"}} onClick={handleClose}/>
-        <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"#32A05F", fontSize:'14px'}}>{warningMessage}</h5>
+        {showWarning ? <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"red", fontSize:'14px'}}> {warningMessage} </h5>
+                    :  <h5 style={{ paddingTop:"10px", display:"flex", justifyContent:"center", color:"#32A05F", fontSize:'14px'}}>{warningMessage}</h5>}
         <form style={{marginTop:"2%",fontFamily:"poppins"}} onSubmit={userTags}>
-        <TextField margin="normal" size="small" fullWidth label="Add Tags" name="email" onChange={ (e)=> setTags(e.target.value)}/>
+        <TextField margin="normal" size="small" fullWidth label="Add Tags" name="email" onChange={ (e)=> setTag(e.target.value)}/>
         <Button type="submit" variant="contained" style={{ backgroundColor: "#32A05F", float:"right" }} sx={{ mt: 3, mb: 2 }}>ADD</Button>
         </form>
         </Box>
